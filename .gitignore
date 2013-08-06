@@ -1,3 +1,4 @@
+*.class
 .metadata
 .DS_Store
 *.tmp
