@@ -4,5 +4,6 @@
     <string name="app_name">FireRwar</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="splash">Splash_Screen</string>
 
 </resources>
