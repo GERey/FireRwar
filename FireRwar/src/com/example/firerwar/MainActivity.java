@@ -1,10 +1,15 @@
 package com.example.firerwar;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.EditText;
 
 public class MainActivity extends Activity {
+	
+	public final static String EXTRA_MESSAGE = "com.example.firerwar.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +23,24 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+    
+    /* in order for onclick to see it needs to be a couple of thigns
+     * first it must be public
+     * it must be void
+     * and it must take in View and it's only parameter
+     */
+    public void sendMessage (View view){
+    	
+    	Intent intent = new Intent (this, DisplayMessageActivity.class);
+    	
+    	EditText editText = (EditText)findViewById(R.id.edit_message);
+    	String message = editText.getText().toString();
+    	intent.putExtra(EXTRA_MESSAGE, message);
+    	
+    	startActivity(intent);
+    	
+    	//derp
     }
     
 }
