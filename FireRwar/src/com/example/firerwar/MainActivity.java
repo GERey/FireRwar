@@ -1,22 +1,130 @@
 package com.example.firerwar;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.util.Enumeration;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
+	
+	String retIp = "";
+	TextView ipAddress;
+	TextView ipAddress2;
+	TextView macAddress;
+	
+	class getIp extends AsyncTask<String, Void, String>{
+
+		@Override
+		protected String doInBackground(String... params) {
+			
+				/*code from the internet */
+			    StringBuilder IFCONFIG=new StringBuilder();
+			    String ipRet = "";
+			    try {
+			    	Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+			    	while(en.hasMoreElements()){
+			    		NetworkInterface netIntr = en.nextElement();
+			    		Enumeration<InetAddress> ipAdrs = netIntr.getInetAddresses();
+			    		while(ipAdrs.hasMoreElements()){
+			    			InetAddress tempIps = ipAdrs.nextElement();
+			    			if(!tempIps.isLinkLocalAddress() && !tempIps.isLoopbackAddress()){
+			    				ipRet = tempIps.getHostAddress();
+			    				
+			    			}
+			    		}
+			    		
+			    		
+			    	}
+			    }
+			    catch (Exception e){
+			    	System.out.println("Error in doInBackground funct: "+ e);
+			    }
+			    	
+			    
+				return ipRet;
+				
+		}
+		
+		protected void onPostExecute(String ipAddrs){
+			
+			retIp = ipAddrs;
+			System.out.println(retIp);
+			ipAddress.setText(retIp);
+
+		}
+		
+		
+	}
 	
 	public final static String EXTRA_MESSAGE = "com.example.firerwar.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        try {
+			initLayout();
+		} catch (Exception e) {
+			System.out.println(e+ ": Error due to unknown host");
+		}
+        
+        //setContentView(R.layout.activity_main);
     }
+    
+    protected void initLayout () throws UnknownHostException {
+    	LinearLayout rootView = new LinearLayout(this);
+    	    	
+    	WifiManager wifiInfo = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+    	int ip = wifiInfo.getConnectionInfo().getIpAddress();
+    	String mac = wifiInfo.getConnectionInfo().getMacAddress();
 
+    	
+    	ipAddress2 = new TextView(this);
+        ipAddress2.setText(intToIp(ip)+"\n");
+    	rootView.addView(ipAddress2);
+    	
+    	macAddress = new TextView(this);
+    	macAddress.setText(mac + "\n");
+    	rootView.addView(macAddress);
+    	
+    	
+    	
+    	
+    	
+    	ipAddress = new TextView(this);
+    	
+    	new getIp().execute(retIp);
+    	
+    	//ipAddress.setText(retIp);
+    	
+    	rootView.addView(ipAddress);
+    	setContentView(rootView);
+    }
+    /*took ip to string coverter off of old cpe464 assignment */
+    public static String intToIp(int i) {
+        return ((i  & 0xFF) + "." +
+               ((i >> 8 ) & 0xFF) + "." +
+               ((i >> 16 ) & 0xFF) + "." +
+               ( (i >> 24)   & 0xFF));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -35,6 +143,8 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent (this, DisplayMessageActivity.class);
     	
     	EditText editText = (EditText)findViewById(R.id.edit_message);
+    	EditText edit2Text = (EditText)findViewById(R.id.edit_message);
+
     	String message = editText.getText().toString();
     	intent.putExtra(EXTRA_MESSAGE, message);
     	
