@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
@@ -29,6 +30,8 @@ public class MainActivity extends Activity {
 	String retIp = "";
 	TextView ipAddress;
 	TextView ipAddress2;
+	TextView gatewayAddress;
+	TextView subnetMask;
 	TextView macAddress;
 	
 	class getIp extends AsyncTask<String, Void, String>{
@@ -91,15 +94,40 @@ public class MainActivity extends Activity {
     
     protected void initLayout () throws UnknownHostException {
     	LinearLayout rootView = new LinearLayout(this);
+    	
+    	
     	    	
     	WifiManager wifiInfo = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-    	int ip = wifiInfo.getConnectionInfo().getIpAddress();
+    	DhcpInfo addr = wifiInfo.getDhcpInfo();
+//    	
+//    	System.out.println(String.valueOf(addr.ipAddress));
+//    	
+//    	Log.d("DHCP infomation",String.valueOf(addr.ipAddress));
+//    	
+//    	ipAddress.setText(String.valueOf(addr.ipAddress));
+//    	rootView.addView(ipAddress);
+//    	
+//    	subnetMask.setText(String.valueOf(addr.netmask));
+//    	rootView.addView(subnetMask);
+//    	
+//    	gatewayAddress.setText(String.valueOf(addr.gateway));
+//    	rootView.addView(gatewayAddress);
+//    	
+//    	setContentView(rootView);
+    	
+    	
+    	
+       	int ip = wifiInfo.getConnectionInfo().getIpAddress();
     	String mac = wifiInfo.getConnectionInfo().getMacAddress();
 
     	
     	ipAddress2 = new TextView(this);
-        ipAddress2.setText(intToIp(ip)+"\n");
+        ipAddress2.setText(intToIp(addr.ipAddress)+"\n");//setText(intToIp(ip)+"\n");
     	rootView.addView(ipAddress2);
+    	
+    	gatewayAddress = new TextView(this);
+    	gatewayAddress.setText(intToIp(addr.gateway) + "\n");
+    	rootView.addView(gatewayAddress);
     	
     	macAddress = new TextView(this);
     	macAddress.setText(mac + "\n");
