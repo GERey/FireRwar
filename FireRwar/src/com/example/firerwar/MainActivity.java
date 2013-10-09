@@ -24,7 +24,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-//make sure to remove the async task as no longer used 
+
 public class MainActivity extends Activity {
 	
 	String retIp = "";
@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
 	TextView subnetMask;
 	TextView macAddress;
 	
+	//TODO: Remove AsyncTask
 	class getIp extends AsyncTask<String, Void, String>{
 
 		@Override
