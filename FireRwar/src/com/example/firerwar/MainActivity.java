@@ -33,6 +33,9 @@ public class MainActivity extends Activity {
 	TextView gatewayAddress;
 	TextView subnetMask;
 	TextView macAddress;
+	TextView dns1;
+	TextView dns2;
+	
 	
 	//TODO: Remove AsyncTask
 	class getIp extends AsyncTask<String, Void, String>{
@@ -95,6 +98,8 @@ public class MainActivity extends Activity {
     
     protected void initLayout () throws UnknownHostException {
     	LinearLayout rootView = new LinearLayout(this);
+    	rootView.setOrientation(LinearLayout.VERTICAL);
+
     	
     	
     	    	
@@ -126,6 +131,10 @@ public class MainActivity extends Activity {
         ipAddress2.setText(intToIp(addr.ipAddress)+"\n");//setText(intToIp(ip)+"\n");
     	rootView.addView(ipAddress2);
     	
+    	subnetMask = new TextView(this);
+    	subnetMask.setText(intToIp(addr.netmask));
+    	rootView.addView(subnetMask);
+
     	gatewayAddress = new TextView(this);
     	gatewayAddress.setText(intToIp(addr.gateway) + "\n");
     	rootView.addView(gatewayAddress);
@@ -134,17 +143,26 @@ public class MainActivity extends Activity {
     	macAddress.setText(mac + "\n");
     	rootView.addView(macAddress);
     	
+    	dns1 = new TextView(this);
+    	dns1.setText(intToIp(addr.dns1));
+    	rootView.addView(dns1);
+    	
+    	dns2 = new TextView(this);
+    	dns2.setText(intToIp(addr.dns2));
+    	rootView.addView(dns2);
     	
     	
     	
     	
-    	ipAddress = new TextView(this);
     	
-    	new getIp().execute(retIp);
+    	
+//    	ipAddress = new TextView(this);
+//    	
+//    	new getIp().execute(retIp);
     	
     	//ipAddress.setText(retIp);
     	
-    	rootView.addView(ipAddress);
+//    	rootView.addView(ipAddress);
     	setContentView(rootView);
     }
     /*took ip to string coverter off of old cpe464 assignment */
