@@ -3,3 +3,5 @@
 .DS_Store
 *.tmp
 R.java
+*.apk
+/bin
