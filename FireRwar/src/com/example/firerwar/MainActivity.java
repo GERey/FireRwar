@@ -37,51 +37,6 @@ public class MainActivity extends Activity {
 	TextView dns2;
 	
 	
-	//TODO: Remove AsyncTask
-	class getIp extends AsyncTask<String, Void, String>{
-
-		@Override
-		protected String doInBackground(String... params) {
-			
-				/*code from the internet */
-			    StringBuilder IFCONFIG=new StringBuilder();
-			    String ipRet = "";
-			    try {
-			    	Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
-			    	while(en.hasMoreElements()){
-			    		NetworkInterface netIntr = en.nextElement();
-			    		Enumeration<InetAddress> ipAdrs = netIntr.getInetAddresses();
-			    		while(ipAdrs.hasMoreElements()){
-			    			InetAddress tempIps = ipAdrs.nextElement();
-			    			if(!tempIps.isLinkLocalAddress() && !tempIps.isLoopbackAddress()){
-			    				ipRet = tempIps.getHostAddress();
-			    				
-			    			}
-			    		}
-			    		
-			    		
-			    	}
-			    }
-			    catch (Exception e){
-			    	System.out.println("Error in doInBackground funct: "+ e);
-			    }
-			    	
-			    
-				return ipRet;
-				
-		}
-		
-		protected void onPostExecute(String ipAddrs){
-			
-			retIp = ipAddrs;
-			System.out.println(retIp);
-			ipAddress.setText(retIp);
-
-		}
-		
-		
-	}
-	
 	public final static String EXTRA_MESSAGE = "com.example.firerwar.MESSAGE";
 
     @Override
@@ -105,22 +60,6 @@ public class MainActivity extends Activity {
     	    	
     	WifiManager wifiInfo = (WifiManager) getSystemService(Context.WIFI_SERVICE);
     	DhcpInfo addr = wifiInfo.getDhcpInfo();
-//    	
-//    	System.out.println(String.valueOf(addr.ipAddress));
-//    	
-//    	Log.d("DHCP infomation",String.valueOf(addr.ipAddress));
-//    	
-//    	ipAddress.setText(String.valueOf(addr.ipAddress));
-//    	rootView.addView(ipAddress);
-//    	
-//    	subnetMask.setText(String.valueOf(addr.netmask));
-//    	rootView.addView(subnetMask);
-//    	
-//    	gatewayAddress.setText(String.valueOf(addr.gateway));
-//    	rootView.addView(gatewayAddress);
-//    	
-//    	setContentView(rootView);
-    	
     	
     	
        	int ip = wifiInfo.getConnectionInfo().getIpAddress();
@@ -128,7 +67,7 @@ public class MainActivity extends Activity {
 
     	
     	ipAddress2 = new TextView(this);
-        ipAddress2.setText(intToIp(addr.ipAddress)+"\n");//setText(intToIp(ip)+"\n");
+        ipAddress2.setText(intToIp(addr.ipAddress)+"\n");
     	rootView.addView(ipAddress2);
     	
     	subnetMask = new TextView(this);
@@ -151,18 +90,6 @@ public class MainActivity extends Activity {
     	dns2.setText(intToIp(addr.dns2));
     	rootView.addView(dns2);
     	
-    	
-    	
-    	
-    	
-    	
-//    	ipAddress = new TextView(this);
-//    	
-//    	new getIp().execute(retIp);
-    	
-    	//ipAddress.setText(retIp);
-    	
-//    	rootView.addView(ipAddress);
     	setContentView(rootView);
     }
     /*took ip to string coverter off of old cpe464 assignment */
@@ -189,15 +116,8 @@ public class MainActivity extends Activity {
     	
     	Intent intent = new Intent (this, DisplayMessageActivity.class);
     	
-    	//EditText editText = (EditText)findViewById(R.id.edit_message);
-    	//EditText edit2Text = (EditText)findViewById(R.id.edit_message);
-
-    	//String message = editText.getText().toString();
-    	//intent.putExtra(EXTRA_MESSAGE, message);
-    	
     	startActivity(intent);
-    	
-    	//derp
+
     }
     
 }
