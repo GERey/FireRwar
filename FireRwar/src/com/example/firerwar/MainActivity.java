@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import android.os.AsyncTask;
@@ -31,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -202,23 +204,36 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
         	
-            View rootView = inflater.inflate(R.layout.fragment_section_dummy,container,false);
+            View rootView = inflater.inflate(R.layout.ip_text_info,container,false);
 
         	return printNetworkSettings(mContext, rootView);
         }
     
     public View printNetworkSettings(Context mContext, View rootView) {
-    	//TODO: Change to listView , connect adapter and ADD TEXT VIEWS
     	TextView ipAddress = new TextView(mContext);
+    	ListView tempView = (ListView) rootView;
+    	ArrayList<String> ipViewText = new ArrayList<String>();
+    	
+    	ArrayAdapter<String> adapter;
+    	adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, ipViewText);
+    	
+    	
+    
+    	
     	
     	WifiManager wifiInfo = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
     	DhcpInfo addr = wifiInfo.getDhcpInfo();
     	
     	ipAddress.setText(intToIp(addr.ipAddress)+"\n");
     	
-    	//((ListView) rootView.findViewById(R.id.listItems)).addView(ipAddress);
+    	
+    	((ListView) rootView.findViewById(R.id.listItems)).setAdapter(adapter);
+    	
+    	ipViewText.add(intToIp(addr.ipAddress)+"\n");
+    	ipViewText.add(intToIp(addr.gateway)+"\n");
+    	adapter.notifyDataSetChanged();
  	
-    	 ((TextView) rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
+    	// ((TextView) rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
     	 
     	 return rootView;
 
