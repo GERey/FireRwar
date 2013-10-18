@@ -229,8 +229,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	
     	((ListView) rootView.findViewById(R.id.listItems)).setAdapter(adapter);
     	
-    	ipViewText.add(intToIp(addr.ipAddress)+"\n");
-    	ipViewText.add(intToIp(addr.gateway)+"\n");
+    	ipViewText.add("IP Address: "+intToIp(addr.ipAddress)+"\n");
+    	ipViewText.add("Subnet Mask: " + intToIp(addr.netmask)+"\n");
+    	ipViewText.add("Default Gateway: " + intToIp(addr.gateway)+"\n");
+    	ipViewText.add("Packets Blocked: " + "<number>" + "\n");
+    	ipViewText.add("IPv4:DNSServers: " + "<?>" + "\n");
+    	
+    	
+    	
     	adapter.notifyDataSetChanged();
  	
     	// ((TextView) rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
