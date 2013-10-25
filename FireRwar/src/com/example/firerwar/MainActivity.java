@@ -145,9 +145,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
+                	Log.d("Going to new screen","fragment 0");
                 	ipInfoShow ipContextPasser = new ipInfoShow();
                 	ipContextPasser.setContext(mContext);
                     return ipContextPasser;
+                    
+                case 1:
+                	Log.d("Going to new screen","fragment 1");
+                	portBlocker portInitBlock = new portBlocker();
+                	portInitBlock.setContext(mContext);
+                	return portInitBlock;
 
                 default:
                     // The other sections of the app are dummy placeholders.
