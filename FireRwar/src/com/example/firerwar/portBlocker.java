@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,13 +34,15 @@ public class portBlocker extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
     	
-        View rootView = inflater.inflate(R.layout.ip_text_info,container,false);
+        View rootView = inflater.inflate(R.layout.port_enter,container,false);
+        
         
         try {
-        	openport(2222);
-			blockport(2222);
+        	//openport(2222);
+			//blockport(2222);
+        	System.out.println("derp");
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -113,9 +116,17 @@ public class portBlocker extends Fragment {
     }
 
 public View printNetworkSettings(Context mContext, View rootView) {
-	TextView ipAddress = new TextView(mContext);
-	ListView tempView = (ListView) rootView;
+	TextView portDisplay = new TextView(mContext);
+	LinearLayout tempView = (LinearLayout) rootView;
+	ListView listerPorts = (ListView) rootView.findViewById(R.id.PortItems);
+	//ListView tempView = (ListView) rootView;
+
+	
 	ArrayList<String> ipViewText = new ArrayList<String>();
+	
+	portDisplay.setText("Ports Blocked");
+	
+	//tempView.addView(ipAddress);
 	
 	ArrayAdapter<String> adapter;
 	adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, ipViewText);
@@ -124,8 +135,12 @@ public View printNetworkSettings(Context mContext, View rootView) {
 	//ipAddress.setText(intToIp(addr.ipAddress)+"\n");
 	
 	
-	((ListView) rootView.findViewById(R.id.listItems)).setAdapter(adapter);
+	//tempView = ((LinearLayout) rootView.findViewById(R.id.listItems));
+
+	listerPorts.setAdapter(adapter);
+	//tempView.addView(listerPorts);
 	
+	ipViewText.add("derp");
 //	ipViewText.add("IP Address: "+intToIp(addr.ipAddress)+"\n");
 //	ipViewText.add("Subnet Mask: " + intToIp(addr.netmask)+"\n");
 //	ipViewText.add("Default Gateway: " + intToIp(addr.gateway)+"\n");
@@ -141,7 +156,7 @@ public View printNetworkSettings(Context mContext, View rootView) {
 	
 	// ((TextView) rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
 	 
-	 return rootView;
+	 return tempView;
 
 }
 

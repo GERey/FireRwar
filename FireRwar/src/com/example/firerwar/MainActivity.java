@@ -168,7 +168,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -223,10 +223,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	
     	ArrayAdapter<String> adapter;
     	adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, ipViewText);
-    	
-    	
-    
-    	
     	
     	WifiManager wifiInfo = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
     	DhcpInfo addr = wifiInfo.getDhcpInfo();
