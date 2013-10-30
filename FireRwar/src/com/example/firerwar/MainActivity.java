@@ -79,15 +79,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        });
 
 	        // For each of the sections in the app, add a tab to the action bar.
-	        for (int i = 0; i < mAppSectionsPagerAdapter.getCount(); i++) {
+	        //for (int i = 0; i < mAppSectionsPagerAdapter.getCount(); i++) {
 	            // Create a tab with text corresponding to the page title defined by the adapter.
 	            // Also specify this Activity object, which implements the TabListener interface, as the
 	            // listener for when this tab is selected.
 	            actionBar.addTab(
 	                    actionBar.newTab()
-	                            .setText(mAppSectionsPagerAdapter.getPageTitle(i))
+	                            .setText("NetInfo")
 	                            .setTabListener(this));
-	        }
+	            actionBar.addTab(
+	                    actionBar.newTab()
+	                            .setText("WhoIs")
+	                            .setTabListener(this));
+	            actionBar.addTab(
+	                    actionBar.newTab()
+	                            .setText("Ports")
+	                            .setTabListener(this));
+	            actionBar.addTab(
+	                    actionBar.newTab()
+	                            .setText("Metrics")
+	                            .setTabListener(this));
+	       // }
 
     }
     
@@ -235,8 +247,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	ipViewText.add("IP Address: "+intToIp(addr.ipAddress)+"\n");
     	ipViewText.add("Subnet Mask: " + intToIp(addr.netmask)+"\n");
     	ipViewText.add("Default Gateway: " + intToIp(addr.gateway)+"\n");
-    	ipViewText.add("Packets Blocked: " + "<number>" + "\n");
-    	ipViewText.add("IPv4:DNSServers: " + "<?>" + "\n");
+    	ipViewText.add("Primary DNS: " + intToIp(addr.dns1) + "\n");
+    	ipViewText.add("Alt DNS: " + intToIp(addr.dns2) + "\n");
     	
     	
     	
