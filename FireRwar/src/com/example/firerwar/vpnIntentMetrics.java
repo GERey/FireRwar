@@ -176,6 +176,11 @@ public class vpnIntentMetrics extends VpnService implements Handler.Callback, Ru
 	            	packet.get(srcIp);
 	            	packet.get(dstIp);
 	            	
+	            	int version = versionIHL[0];
+	            	int versionNum = version >> 4;
+	            	int ihl = versionIHL[0];
+	            	ihl = ihl & 0x000F;
+	            	
 	            	 typeVal = convertntohs(protocol);
 	            	
 	            	
