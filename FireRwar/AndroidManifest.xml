@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
     <application
@@ -13,7 +13,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
         <activity
             android:name="com.example.firerwar.MainActivity"
             android:label="@string/app_name" >
@@ -31,8 +30,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.firerwar.MainActivity" />
         </activity>
+        <activity
+            android:name="com.example.firerwar.VpnClient"
+            android:label="@string/title_activity_vpn_client" >
+        </activity>
+        
+        <service android:name="com.example.firerwar.vpnIntentMetrics"
+                android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+        </service>
+        
     </application>
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

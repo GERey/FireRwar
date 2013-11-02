@@ -8,5 +8,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_display_message">MESSAGEHERE</string>
+    <string name="title_activity_vpn_client">VpnClient</string>
+    <string name="title_activity_vpn_service">VpnService</string>
 
 </resources>

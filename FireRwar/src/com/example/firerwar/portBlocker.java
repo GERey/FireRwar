@@ -116,15 +116,15 @@ public class portBlocker extends Fragment {
     }
 
 public View printNetworkSettings(Context mContext, View rootView) {
-	TextView portDisplay = new TextView(mContext);
-	LinearLayout tempView = (LinearLayout) rootView;
+	TextView portDisplay = (TextView) rootView.findViewById(R.id.Namer);
+	LinearLayout tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
 	ListView listerPorts = (ListView) rootView.findViewById(R.id.PortItems);
-	//ListView tempView = (ListView) rootView;
 
 	
 	ArrayList<String> ipViewText = new ArrayList<String>();
 	
 	portDisplay.setText("Ports Blocked");
+	//tempView.addView(portDisplay);
 	
 	//tempView.addView(ipAddress);
 	
