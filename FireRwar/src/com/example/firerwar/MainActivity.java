@@ -164,9 +164,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     
                 case 1: /*WhoIs Screen*/
                 	Log.d("Going to new screen","fragment 1");
-                	portBlocker portInitBlock = new portBlocker();
-                	portInitBlock.setContext(mContext);
-                	return portInitBlock;
+                	WhoIsInfo whoInfo = new WhoIsInfo();
+                	whoInfo.setContext(mContext);
+                	return whoInfo;
                 
                 case 2: /*Ports Screen*/
                 	Log.d("Going to new screen","fragment 2");

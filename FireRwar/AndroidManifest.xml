@@ -34,14 +34,19 @@
             android:name="com.example.firerwar.VpnClient"
             android:label="@string/title_activity_vpn_client" >
         </activity>
-        
-        <service android:name="com.example.firerwar.vpnIntentMetrics"
-                android:permission="android.permission.BIND_VPN_SERVICE">
+
+        <service
+            android:name="com.example.firerwar.vpnIntentMetrics"
+            android:permission="android.permission.BIND_VPN_SERVICE" >
             <intent-filter>
-                <action android:name="android.net.VpnService"/>
+                <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
-        
+
+        <activity
+            android:name="com.example.firerwar.WhoIsInfo"
+            android:label="@string/title_activity_who_is_info" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
