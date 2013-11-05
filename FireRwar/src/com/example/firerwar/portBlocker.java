@@ -24,142 +24,136 @@ public class portBlocker extends Fragment {
 	Socket temp;
 
 	Context mContext;
-	
-    public static final String ARG_SECTION_NUMBER = "BOOP";
 
-    public void setContext (Context mContext) {
-    	this.mContext = mContext;
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-    	
-        View rootView = inflater.inflate(R.layout.port_enter,container,false);
-        
-        
-        try {
-        	//openport(2222);
-			//blockport(2222);
-        	System.out.println("derp");
-			
+	public static final String ARG_SECTION_NUMBER = "BOOP";
+
+	public void setContext(Context mContext) {
+		this.mContext = mContext;
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+
+		View rootView = inflater.inflate(R.layout.port_enter, container, false);
+
+		try {
+			// openport(2222);
+			// blockport(2222);
+			System.out.println("derp");
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-    	return printNetworkSettings(mContext, rootView);
-    }
-    
-    public void blockport (final int port) throws IOException {
-    	//sock = new ServerSocket();
-    	temp = new Socket();
+		return printNetworkSettings(mContext, rootView);
+	}
 
-    	
-    	
-    	try {
-    		new Thread(new Runnable() {
+	public void blockport(final int port) throws IOException {
+		// sock = new ServerSocket();
+		temp = new Socket();
+
+		try {
+			new Thread(new Runnable() {
 
 				@Override
 				public void run() {
-					//while(true) {
-						try {
-							
-							if (!temp.isBound()){
-								temp = new Socket("10.151.42.155",port);
-								temp.setReuseAddress(true);
-								temp.close();
-							}
-							
-						} catch (Exception e) {
-							System.out.println("thread blockport failed"+e);
-						}
-					//}
-					
-				}
-    			
-    		}).start();
-    	} catch (Exception e){
-    		Log.d("blockport Exception",""+e);
-    	}
-    	
-    }
-    
-    public void openport (final int port) throws IOException {
-    	sock = new ServerSocket();
+					// while(true) {
+					try {
 
-    	
-    	
-    	try {
-    		new Thread(new Runnable() {
+						if (!temp.isBound()) {
+							temp = new Socket("10.151.42.155", port);
+							temp.setReuseAddress(true);
+							temp.close();
+						}
+
+					} catch (Exception e) {
+						System.out.println("thread blockport failed" + e);
+					}
+					// }
+
+				}
+
+			}).start();
+		} catch (Exception e) {
+			Log.d("blockport Exception", "" + e);
+		}
+
+	}
+
+	public void openport(final int port) throws IOException {
+		sock = new ServerSocket();
+
+		try {
+			new Thread(new Runnable() {
 
 				@Override
 				public void run() {
-						try {
-							
-							if (!temp.isBound()){
-					            ServerSocket serverSocket = new ServerSocket(port);
-					   			serverSocket.accept();
+					try {
 
-							}
-							
-						} catch (Exception e) {
-							System.out.println("thread openport failed"+e);
+						if (!temp.isBound()) {
+							ServerSocket serverSocket = new ServerSocket(port);
+							serverSocket.accept();
+
 						}
-					
+
+					} catch (Exception e) {
+						System.out.println("thread openport failed" + e);
+					}
+
 				}
-    			
-    		}).start();
-    	} catch (Exception e){
-    		Log.d("openport Exception",""+e);
-    	}
-    	
-    }
 
-public View printNetworkSettings(Context mContext, View rootView) {
-	TextView portDisplay = (TextView) rootView.findViewById(R.id.Namer);
-	LinearLayout tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
-	ListView listerPorts = (ListView) rootView.findViewById(R.id.PortItems);
+			}).start();
+		} catch (Exception e) {
+			Log.d("openport Exception", "" + e);
+		}
 
-	
-	ArrayList<String> ipViewText = new ArrayList<String>();
-	
-	portDisplay.setText("Ports Blocked");
-	//tempView.addView(portDisplay);
-	
-	//tempView.addView(ipAddress);
-	
-	ArrayAdapter<String> adapter;
-	adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, ipViewText);
-	
-	
-	//ipAddress.setText(intToIp(addr.ipAddress)+"\n");
-	
-	
-	//tempView = ((LinearLayout) rootView.findViewById(R.id.listItems));
+	}
 
-	listerPorts.setAdapter(adapter);
-	//tempView.addView(listerPorts);
-	
-	ipViewText.add("derp");
-//	ipViewText.add("IP Address: "+intToIp(addr.ipAddress)+"\n");
-//	ipViewText.add("Subnet Mask: " + intToIp(addr.netmask)+"\n");
-//	ipViewText.add("Default Gateway: " + intToIp(addr.gateway)+"\n");
-//	ipViewText.add("Packets Blocked: " + "<number>" + "\n");
-//	ipViewText.add("IPv4:DNSServers: " + "<?>" + "\n");
-	//TODO: Add button that is named release port so that you can see it working in action
-	//TODO: add text field that shows ports blocked
-	//TODO: look up how to block tcp and udp ports, also how to distinguish between them
-	//TODO: Add network graph to monitor throughput
-	
-	
-	adapter.notifyDataSetChanged();
-	
-	// ((TextView) rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
-	 
-	 return tempView;
+	public View printNetworkSettings(Context mContext, View rootView) {
+		TextView portDisplay = (TextView) rootView.findViewById(R.id.TCPports);
+		TextView udpDisplay = (TextView) rootView.findViewById(R.id.UDPports);
+		LinearLayout tempView = (LinearLayout) rootView
+				.findViewById(R.id.LinearPortHolder);
+		ListView listerPorts = (ListView) rootView.findViewById(R.id.PortItems);
+		ListView udpPortsList = (ListView) rootView.findViewById(R.id.UDPItems);
 
-}
+		ArrayList<String> ipViewText = new ArrayList<String>();
+		ArrayList<String> udpViewText = new ArrayList<String>();
 
+		portDisplay.setText("TCP Ports");
+		udpDisplay.setText("UDP Ports");
+		// tempView.addView(portDisplay);
 
-	
+		// tempView.addView(ipAddress);
+
+		ArrayAdapter<String> adapter;
+		ArrayAdapter<String> adapter2;
+		adapter = new ArrayAdapter<String>(mContext,
+				android.R.layout.simple_list_item_1, ipViewText);
+		adapter2 = new ArrayAdapter<String>(mContext,
+				android.R.layout.simple_list_item_1, udpViewText);
+
+		// ipAddress.setText(intToIp(addr.ipAddress)+"\n");
+
+		// tempView = ((LinearLayout) rootView.findViewById(R.id.listItems));
+
+		listerPorts.setAdapter(adapter);
+		udpPortsList.setAdapter(adapter2);
+		// tempView.addView(listerPorts);
+
+		ipViewText.add("derp");
+		udpViewText.add("udp stuff here");
+		// TODO: make buttons take in data and do correct stuff...
+
+		adapter.notifyDataSetChanged();
+		adapter2.notifyDataSetChanged();
+		// ((TextView)
+		// rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
+
+		return tempView;
+
+	}
+
 }

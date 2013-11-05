@@ -13,5 +13,8 @@
     <string name="title_activity_who_is_info">WhoIsInfo</string>
     <string name="LookupButton">Lookup!</string>
     <string name="enterQuery">WhoIs IP Address Goes Here</string>
+    <string name="enterPort">Enter port</string>
+    <string name="addPortOpen">Add Open Port</string>
+    <string name="addPortClose">Add Blocked Port</string>
 
 </resources>

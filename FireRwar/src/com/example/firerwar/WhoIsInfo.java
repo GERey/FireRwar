@@ -146,18 +146,17 @@ public class WhoIsInfo extends Fragment {
 
 				@Override
 				public void run() {
-					//while(true) {
 						try {
 							Socket sock = new Socket();//new Socket("whois.internic.net", 43);
 							if (!sock.isBound()){
-								sock = new Socket("whois.internic.net",43);
+								sock = new Socket("whois.internic.net", 43);
 								Log.d("whois2", "2");
 								//sock.setReuseAddress(true);
 								InputStreamReader isr = new InputStreamReader(sock.getInputStream());
 								BufferedReader in = new BufferedReader(isr);
 								String temp = "";
 								PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
-								out.println("="+query);
+								out.println("="+query+"\n");
 								Log.d("whois3", "3");
 								dataOut = "";
 								while ((temp = in.readLine()) != null) {
@@ -165,7 +164,7 @@ public class WhoIsInfo extends Fragment {
 								}
 								Log.d("output", dataOut);
 								
-								data.add("output is: " + dataOut);
+								data.add("output2 is: " + dataOut);
 							/*	data.add("OrgName: ");
 								data.add("OrgId: ");
 								data.add("Address: ");
@@ -184,36 +183,15 @@ public class WhoIsInfo extends Fragment {
     			
     		}).start();
 			
-		/*	Log.d("whois2", "2");
-			InputStreamReader isr = new InputStreamReader(sock.getInputStream());
-			BufferedReader in = new BufferedReader(isr);
-			String temp = "";
-			
-			while ((temp = in.readLine()) != null) {
-				output = output + temp + "\n";
-			}*/
-			/*	Writer out = new OutputStreamWriter(sock.getOutputStream());
-			Log.d("whois3", "3");
-			out.write("="+query+"\n");
-			Log.d("whois4", "4");
-			out.flush();
-			Log.d("whois5", "5");
-			DataInputStream st;
-			st = new DataInputStream(sock.getInputStream());
-			Log.d("whois6", "6");
-			String temp;*/
-		/*	while ((temp = st.readLine()) != null) {
-				output = output + temp + "\n";
-			}*/
 		} catch (Exception e) {
 			Log.d("whois", "exception somewhere...");
 		}
-	//	data.add ("output2 is: " + dataOut);
+		data.add ("output is: " + dataOut);
 		data.add("OrgName: ");
 		data.add("OrgId: ");
 		data.add("Address: ");
 		data.add("City: ");
-	//	adapter.notifyDataSetChanged();
+		adapter.notifyDataSetChanged();
 		Log.d("eloui", "added stuff!");
 	}
 
