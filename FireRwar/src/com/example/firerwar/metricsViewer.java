@@ -1,101 +1,177 @@
 package com.example.firerwar;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.jjoe64.graphview.CustomLabelFormatter;
+import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.LineGraphView;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.GraphView.LegendAlign;
+import com.jjoe64.graphview.GraphViewSeries;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.net.TrafficStats;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class metricsViewer extends Fragment{
-	
+public class metricsViewer extends Fragment {
+
 	ServerSocket sock;
 	Socket temp;
 
 	Context mContext;
-	VpnClient connectVpn = new VpnClient();
-	
-    public void setContext (Context mContext) {
-    	this.mContext = mContext;
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-    	
-        View rootView = inflater.inflate(R.layout.form,container,false);
-        
-        rootView.findViewById(R.id.connect)
-        .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), VpnClient.class);
-                startActivity(intent);
-            }
-        });
 
-    	return rootView;//printNetworkSettings(mContext, rootView);
-    }
+	public void setContext(Context mContext) {
+		this.mContext = mContext;
+	}
 
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 
-public View printNetworkSettings(Context mContext, View rootView) {
-	
-	
-	TextView portDisplay = (TextView) rootView.findViewById(R.id.Namer);
-	LinearLayout tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
-	ListView listerPorts = (ListView) rootView.findViewById(R.id.PortItems);
-	//ListView tempView = (ListView) rootView;
+		View rootView = inflater.inflate(R.layout.form, container, false);
 
-	
-	ArrayList<String> ipViewText = new ArrayList<String>();
-	
-	portDisplay.setText("Ports Blocked");
-	//tempView.addView(portDisplay);
-	
-	//tempView.addView(ipAddress);
-	
-	ArrayAdapter<String> adapter;
-	adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, ipViewText);
-	
-	
-	//ipAddress.setText(intToIp(addr.ipAddress)+"\n");
-	
-	
-	//tempView = ((LinearLayout) rootView.findViewById(R.id.listItems));
+		return printNetworkSettings(mContext, rootView);
+	}
 
-	listerPorts.setAdapter(adapter);
-	//tempView.addView(listerPorts);
-	
-	ipViewText.add("Metrics shown here");
-//	ipViewText.add("IP Address: "+intToIp(addr.ipAddress)+"\n");
-//	ipViewText.add("Subnet Mask: " + intToIp(addr.netmask)+"\n");
-//	ipViewText.add("Default Gateway: " + intToIp(addr.gateway)+"\n");
-//	ipViewText.add("Packets Blocked: " + "<number>" + "\n");
-//	ipViewText.add("IPv4:DNSServers: " + "<?>" + "\n");
-	//TODO: Add button that is named release port so that you can see it working in action
-	//TODO: add text field that shows ports blocked
-	//TODO: look up how to block tcp and udp ports, also how to distinguish between them
-	//TODO: Add network graph to monitor throughput
-	
-	
-	adapter.notifyDataSetChanged();
+	/*
+	 * You'll want to make a uid hashtable and then update the values in the
+	 * listview whenever one of them increases, these increases should also be
+	 * reflected in the graph view that I choose to use
+	 */
+	public View printNetworkSettings(Context mContext, View rootView) {
 
-	
-	// ((TextView) rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
-	 
-	 return tempView;
+		TextView portDisplay = (TextView) rootView.findViewById(R.id.Namer);
+		LinearLayout tempView = (LinearLayout) rootView
+				.findViewById(R.id.LinearPortHolder);
+		LinearLayout graphV = (LinearLayout) rootView.findViewById(R.id.graph);
+		ListView listerPorts = (ListView) rootView.findViewById(R.id.PortItems);
 
-}
+		ArrayList<String> ipViewText = new ArrayList<String>();
 
+		ArrayAdapter<String> adapter;
+		adapter = new ArrayAdapter<String>(mContext,
+				android.R.layout.simple_list_item_1, ipViewText);
+
+		listerPorts.setAdapter(adapter);
+
+		// calculates how much data has been downloaded and uploaded from boot.
+		long rxBytes = TrafficStats.getTotalRxBytes();
+		long txBytes = TrafficStats.getTotalTxBytes();
+		ipViewText.add("Download: " + Long.toString(rxBytes));
+		ipViewText.add("Uploaded: " + Long.toString(txBytes));
+
+		// handles reading in all of the applications name and their data
+		readApplicationPackageNames(ipViewText);
+
+		// handles adding the graphview and it's colors/layouts
+		graphV.addView(graphInitializer(rxBytes, txBytes));
+
+		adapter.notifyDataSetChanged();
+		return tempView;
+
+	}
+
+	public GraphView graphInitializer(long downloaded, long uploaded) {
+
+		GraphViewSeries downloadSeries = new GraphViewSeries("Download",
+				new GraphViewSeriesStyle(Color.RED, 10), new GraphViewData[] {
+						new GraphViewData(1, downloaded),
+						new GraphViewData(4, 20000000 + downloaded) });
+		GraphViewSeries uploadSeries = new GraphViewSeries("Uploaded",
+				new GraphViewSeriesStyle(Color.BLUE, 10), new GraphViewData[] {
+						new GraphViewData(1, uploaded),
+						new GraphViewData(4, 10000000 + uploaded) });
+		GraphView graphView = new LineGraphView(mContext, "Network Data Graph");
+
+		// graphView.setVerticalLabels(new String[]{});
+		graphView.addSeries(downloadSeries);
+		graphView.addSeries(uploadSeries);
+		graphView.getGraphViewStyle().setHorizontalLabelsColor(Color.GREEN);
+
+		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {
+
+			@Override
+			public String formatLabel(double val, boolean isValueX) {
+				int value = (int) val;
+				value = value / 1000;
+				if (!isValueX) {
+					if (value <= 1000) {
+						return "1 MB";
+					} else if (value == 5000) {
+						return "5 MB";
+					} else if (value == 20000) {
+						return "20 MB";
+					} else if (value == 40000) {
+						return "40 MB";
+					} else if (value == 100000) {
+						return "100 MB";
+					}
+				}
+				return null;
+			}
+		});
+		// graphView.
+		graphView.getGraphViewStyle().setVerticalLabelsColor(Color.BLACK);
+		graphView.setShowLegend(true);
+		graphView.setLegendAlign(LegendAlign.TOP);
+		graphView.setLegendWidth(300);
+		graphView.setManualYAxisBounds(100000000, 0.0);
+
+		return graphView;
+
+	}
+
+	public ArrayList<String> readApplicationPackageNames(
+			ArrayList<String> infoPackage) {
+
+		PackageManager packer = mContext.getPackageManager();
+		File dir = new File("/proc/uid_stat/");
+		String[] children = dir.list();
+		List<Integer> uids = new ArrayList<Integer>();
+		if (children != null) {
+			for (int i = 0; i < children.length; i++) {
+				int uid = Integer.parseInt(children[i]);
+				String uidString = String.valueOf(uid);
+				File uidFileDir = new File("/proc/uid_stat/" + uidString);
+				File uidActualFile = new File(uidFileDir, "tcp_rcv");
+
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(
+							uidActualFile));
+					String line;
+
+					while ((line = br.readLine()) != null) {
+						infoPackage
+								.add(packer.getNameForUid(uid) + ": " + line);
+					}
+					br.close();
+
+				} catch (IOException e) {
+					// handle this
+				}
+
+				uids.add(uid);
+			}
+
+		}
+		return infoPackage;
+	}
 }
