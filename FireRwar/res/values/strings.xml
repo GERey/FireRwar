@@ -10,5 +10,8 @@
     <string name="title_activity_display_message">MESSAGEHERE</string>
     <string name="title_activity_vpn_client">VpnClient</string>
     <string name="title_activity_vpn_service">VpnService</string>
+    <string name="title_activity_who_is_info">WhoIsInfo</string>
+    <string name="LookupButton">Lookup!</string>
+    <string name="enterQuery">WhoIs IP Address Goes Here</string>
 
 </resources>
