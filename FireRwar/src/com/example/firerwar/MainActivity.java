@@ -235,8 +235,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
     
     public View printNetworkSettings(Context mContext, View rootView) {
-    	TextView ipAddress = new TextView(mContext);
-    	ListView tempView = (ListView) rootView;
+    	//TextView ipAddress = new TextView(mContext);
+    	//ListView tempView = (ListView) rootView;
     	ArrayList<String> ipViewText = new ArrayList<String>();
     	
     	ArrayAdapter<String> adapter;
@@ -245,7 +245,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	WifiManager wifiInfo = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
     	DhcpInfo addr = wifiInfo.getDhcpInfo();
     	
-    	ipAddress.setText(intToIp(addr.ipAddress)+"\n");
+    	//ipAddress.setText(intToIp(addr.ipAddress)+"\n");
     	
     	
     	((ListView) rootView.findViewById(R.id.listItems)).setAdapter(adapter);
