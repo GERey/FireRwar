@@ -4,6 +4,19 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <EditText
+            android:id="@+id/portText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enterPort" />
+        
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,12 +34,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/addPortClose" />
-
-        <EditText
-            android:id="@+id/portText"
-            android:layout_width="match_parent"
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <Button
+            android:id="@+id/UDPopenButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/enterPort" />
+            android:text="@string/openUdpButton" />
+        
+        <Button 
+            android:id="@+id/UDPcloseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/closeUdpButton"/>
+        
     </LinearLayout>
 
     <LinearLayout
