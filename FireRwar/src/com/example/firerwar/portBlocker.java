@@ -34,6 +34,9 @@ public class portBlocker extends Fragment {
 
 	Context mContext;
 
+	protected int greenText;
+	protected int redText;
+	
 	public static final String ARG_SECTION_NUMBER = "BOOP";
 
 	public void setContext(Context mContext) {
@@ -45,6 +48,8 @@ public class portBlocker extends Fragment {
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.port_enter, container, false);
+		greenText = R.color.openGreen;
+		redText = R.color.blockRed;
 
 		try {
 			// openport(2222);
@@ -130,15 +135,15 @@ public class portBlocker extends Fragment {
 	public View printNetworkSettings(Context mContext, View rootView) {
 		TextView tcpDisplay = (TextView) rootView.findViewById(R.id.TCPports);
 		TextView udpDisplay = (TextView) rootView.findViewById(R.id.UDPports);
-		LinearLayout tempView = (LinearLayout) rootView
-				.findViewById(R.id.LinearPortHolder);
-		ListView tcpPortsList = (ListView) rootView
-				.findViewById(R.id.PortItems);
+		LinearLayout tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
+		ListView tcpPortsList = (ListView) rootView.findViewById(R.id.PortItems);
 		ListView udpPortsList = (ListView) rootView.findViewById(R.id.UDPItems);
-		Button closeTCPButton = (Button) rootView
-				.findViewById(R.id.portClosedButton);
-		Button openTCPButton = (Button) rootView
-				.findViewById(R.id.portOpenButton);
+		
+		Button closeTCPButton = (Button) rootView.findViewById(R.id.portClosedButton);
+		Button openTCPButton = (Button) rootView.findViewById(R.id.portOpenButton);
+		Button closeUDPButton = (Button)rootView.findViewById(R.id.UDPcloseButton);
+		Button openUDPButton = (Button)rootView.findViewById(R.id.UDPopenButton);
+		
 		portText = (EditText) rootView.findViewById(R.id.portText);
 		portText.setRawInputType(Configuration.KEYBOARD_12KEY);
 
@@ -174,6 +179,7 @@ public class portBlocker extends Fragment {
 				String portHold = portText.getText().toString();
 				try {
 					int port = Integer.parseInt(portHold);
+					
 					tcpViewText.add(portHold);
 					adapter.notifyDataSetChanged();
 
@@ -197,8 +203,8 @@ public class portBlocker extends Fragment {
 				String portHold = portText.getText().toString();
 				try {
 					int port = Integer.parseInt(portHold);
-					udpViewText.add(portHold);
-					adapter2.notifyDataSetChanged();
+					tcpViewText.add(portHold);
+					adapter.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
 
@@ -212,7 +218,54 @@ public class portBlocker extends Fragment {
 
 			}
 		});
+		
+		closeUDPButton.setOnClickListener(new OnClickListener() {
 
+			@Override
+			public void onClick(View arg0) {
+				String portHold = portText.getText().toString();
+				try {
+					int port = Integer.parseInt(portHold);
+					
+					udpViewText.add(portHold);
+					adapter2.notifyDataSetChanged();
+
+					// TODO add error checking for the above here
+
+					blockport(port);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					System.out.println(e + " failed in block port");
+				} catch (Exception e) {
+					System.out.println("failed in int conversion: " + e);
+				}
+			}
+			
+		});
+
+		openUDPButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				String portHold = portText.getText().toString();
+				try {
+					int port = Integer.parseInt(portHold);
+					udpViewText.add(portHold);
+					adapter2.notifyDataSetChanged();
+
+					// TODO add error checking for the above here
+
+					openport(port);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					System.out.println(e + " failed in open port");
+				} catch (Exception e) {
+					System.out.println("failed in open int conversion: " + e);
+				}
+			}
+			
+		});
+		
 		adapter.notifyDataSetChanged();
 		adapter2.notifyDataSetChanged();
 		// ((TextView)
