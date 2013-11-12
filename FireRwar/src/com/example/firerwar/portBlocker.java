@@ -177,10 +177,19 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View v) {
 				String portHold = portText.getText().toString();
+				int i;
+				
 				try {
 					int port = Integer.parseInt(portHold);
 					
-					tcpViewText.add(portHold);
+					for (i = 0; i < tcpViewText.size(); i++) {
+						if (tcpViewText.get(i).contains(portHold)) {
+							tcpViewText.remove(i);
+							break;
+						}
+					}
+					
+					tcpViewText.add(portHold + " blocked");
 					adapter.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
@@ -201,9 +210,18 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View v) {
 				String portHold = portText.getText().toString();
+				int i;
+				
 				try {
 					int port = Integer.parseInt(portHold);
-					tcpViewText.add(portHold);
+					
+					for (i = 0; i < tcpViewText.size(); i++) {
+						if (tcpViewText.get(i).contains(portHold)) {
+							tcpViewText.remove(i);
+							break;
+						}
+					}
+					tcpViewText.add(portHold + " opened");
 					adapter.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
@@ -224,10 +242,18 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View arg0) {
 				String portHold = portText.getText().toString();
+				int i;
+				
 				try {
 					int port = Integer.parseInt(portHold);
 					
-					udpViewText.add(portHold);
+					for (i = 0; i < udpViewText.size(); i++) {
+						if (udpViewText.get(i).contains(portHold)) {
+							udpViewText.remove(i);
+							break;
+						}
+					}
+					udpViewText.add(portHold + " blocked");
 					adapter2.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
@@ -248,9 +274,19 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View arg0) {
 				String portHold = portText.getText().toString();
+				int i;
+				
 				try {
 					int port = Integer.parseInt(portHold);
-					udpViewText.add(portHold);
+					
+					for (i = 0; i < udpViewText.size(); i++) {
+						if (udpViewText.get(i).contains(portHold)) {
+							udpViewText.remove(i);
+							break;
+						}
+					}
+					
+					udpViewText.add(portHold + " opened");
 					adapter2.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
