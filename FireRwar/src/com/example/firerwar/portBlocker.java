@@ -143,9 +143,12 @@ public class portBlocker extends Fragment {
 		
 		ipViewText = new ArrayList<String>();
 		udpViewText = new ArrayList<String>();
+		
+		ipViewText.clear();
+		udpViewText.clear();
 
-		portDisplay.setText("Open Ports");
-		udpDisplay.setText("Close Ports");
+		portDisplay.setText("Close Ports");
+		udpDisplay.setText("Open Ports");
 		// tempView.addView(portDisplay);
 
 		// tempView.addView(ipAddress);

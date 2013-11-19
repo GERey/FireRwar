@@ -16,5 +16,6 @@
     <string name="enterPort">Enter port</string>
     <string name="addPortOpen">Add Open Port</string>
     <string name="addPortClose">Add Blocked Port</string>
+    <string name="metrics_viewer">metrics viewer</string>
 
 </resources>
