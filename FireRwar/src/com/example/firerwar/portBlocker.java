@@ -13,9 +13,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView.*;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,13 +34,32 @@ public class portBlocker extends Fragment {
 	public EditText portText;
 	public ArrayList<String> tcpViewText;
 	public ArrayList<String> udpViewText;
+	public ArrayList<String> tcpFilterList;
+	public ArrayList<String> udpFilterList;
 	public ArrayAdapter<String> adapter;
 	public ArrayAdapter<String> adapter2;
+	
+	protected TextView tcpDisplay;
+	protected TextView udpDisplay;
+	protected LinearLayout tempView;
+	protected ListView tcpPortsList;
+	protected ListView udpPortsList;
+	
+	protected Button closeTCPButton;
+	protected Button openTCPButton;
+	protected Button closeUDPButton;
+	protected Button openUDPButton;
+	
+	protected View rootView;
 
 	Context mContext;
 
 	protected int greenText;
 	protected int redText;
+	
+	protected static final int FILTER_SHOW_ALL = 0;
+	protected static final int FILTER_OPEN = 1;
+	protected static final int FILTER_CLOSE = 2;
 	
 	public static final String ARG_SECTION_NUMBER = "BOOP";
 
@@ -47,7 +71,7 @@ public class portBlocker extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		View rootView = inflater.inflate(R.layout.port_enter, container, false);
+		rootView = inflater.inflate(R.layout.port_enter, container, false);
 		greenText = R.color.openGreen;
 		redText = R.color.blockRed;
 
@@ -61,7 +85,45 @@ public class portBlocker extends Fragment {
 			e.printStackTrace();
 		}
 
-		return printNetworkSettings(mContext, rootView);
+		initLayout();
+		return printNetworkSettings(mContext);
+	}
+	
+	protected void initLayout() {
+		tcpDisplay = (TextView) rootView.findViewById(R.id.TCPports);
+		udpDisplay = (TextView) rootView.findViewById(R.id.UDPports);
+		tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
+		tcpPortsList = (ListView) rootView.findViewById(R.id.PortItems);
+		udpPortsList = (ListView) rootView.findViewById(R.id.UDPItems);
+		
+		closeTCPButton = (Button) rootView.findViewById(R.id.portClosedButton);
+		openTCPButton = (Button) rootView.findViewById(R.id.portOpenButton);
+		closeUDPButton = (Button)rootView.findViewById(R.id.UDPcloseButton);
+		openUDPButton = (Button)rootView.findViewById(R.id.UDPopenButton);
+		
+		portText = (EditText) rootView.findViewById(R.id.portText);
+		portText.setRawInputType(Configuration.KEYBOARD_12KEY);
+
+		tcpViewText = new ArrayList<String>();
+		udpViewText = new ArrayList<String>();
+		tcpFilterList = new ArrayList<String>();
+		udpFilterList = new ArrayList<String>();
+		
+		tcpDisplay.setText("TCP Ports");
+		udpDisplay.setText("UDP Ports");
+				
+		//adapter = new ArrayAdapter<String>(mContext,
+		//		android.R.layout.simple_list_item_1, tcpViewText);
+		//adapter2 = new ArrayAdapter<String>(mContext,
+		//		android.R.layout.simple_list_item_1, udpViewText);
+		adapter = new ArrayAdapter<String>(mContext,
+				android.R.layout.simple_list_item_1, tcpFilterList);
+		adapter2 = new ArrayAdapter<String>(mContext,
+				android.R.layout.simple_list_item_1, udpFilterList);
+
+		tcpPortsList.setAdapter(adapter);
+		udpPortsList.setAdapter(adapter2);
+		
 	}
 
 	public void blockport(final int port) throws IOException {
@@ -131,9 +193,83 @@ public class portBlocker extends Fragment {
 		}
 
 	}
+	
+	@Override
+	public void onStart() {
+		setHasOptionsMenu(true);
+		super.onStart();
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		if (inflater != null) {
+			inflater.inflate(R.menu.ports_menu, menu);
+		}
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_open:
+			filterList(FILTER_OPEN);
+			return true;
+		case R.id.menu_close:
+			filterList(FILTER_CLOSE);
+			return true;
+		case R.id.menu_all:
+			filterList(FILTER_SHOW_ALL);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	private void filterList(int filter) {
+		int i;
+		tcpFilterList.clear();
+		udpFilterList.clear();
+		
+		switch (filter) {
+		case FILTER_OPEN:
+			for (i = 0; i < tcpViewText.size(); i++) {
+				if (tcpViewText.get(i).contains("opened")) {
+					tcpFilterList.add(tcpViewText.get(i));
+				}
+			}
+			for (i = 0; i < udpViewText.size(); i++) {
+				if (udpViewText.get(i).contains("opened")) {
+					udpFilterList.add(udpViewText.get(i));
+				}
+			}
+			break;
+		case FILTER_CLOSE:
+			for (i = 0; i < tcpViewText.size(); i++) {
+				if (tcpViewText.get(i).contains("blocked")) {
+					tcpFilterList.add(tcpViewText.get(i));
+				}
+			}
+			for (i = 0; i < udpViewText.size(); i++) {
+				if (udpViewText.get(i).contains("blocked")) {
+					udpFilterList.add(udpViewText.get(i));
+				}
+			}
+			break;
+		case FILTER_SHOW_ALL:
+			for (i = 0; i < tcpViewText.size(); i++) {
+				tcpFilterList.add(tcpViewText.get(i));
+			}
+			for (i = 0; i < udpViewText.size(); i++) {
+				udpFilterList.add(udpViewText.get(i));
+			}
+			break;
+		}
+		
+		adapter.notifyDataSetChanged();
+		adapter2.notifyDataSetChanged();
+	}
 
-	public View printNetworkSettings(Context mContext, View rootView) {
-		TextView tcpDisplay = (TextView) rootView.findViewById(R.id.TCPports);
+	public View printNetworkSettings(Context mContext) {
+		/*TextView tcpDisplay = (TextView) rootView.findViewById(R.id.TCPports);
 		TextView udpDisplay = (TextView) rootView.findViewById(R.id.UDPports);
 		LinearLayout tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
 		ListView tcpPortsList = (ListView) rootView.findViewById(R.id.PortItems);
@@ -142,9 +278,9 @@ public class portBlocker extends Fragment {
 		Button closeTCPButton = (Button) rootView.findViewById(R.id.portClosedButton);
 		Button openTCPButton = (Button) rootView.findViewById(R.id.portOpenButton);
 		Button closeUDPButton = (Button)rootView.findViewById(R.id.UDPcloseButton);
-		Button openUDPButton = (Button)rootView.findViewById(R.id.UDPopenButton);
+		Button openUDPButton = (Button)rootView.findViewById(R.id.UDPopenButton); */
 		
-		portText = (EditText) rootView.findViewById(R.id.portText);
+	/*	portText = (EditText) rootView.findViewById(R.id.portText);
 		portText.setRawInputType(Configuration.KEYBOARD_12KEY);
 
 		tcpViewText = new ArrayList<String>();
@@ -166,7 +302,8 @@ public class portBlocker extends Fragment {
 		// tempView = ((LinearLayout) rootView.findViewById(R.id.listItems));
 
 		tcpPortsList.setAdapter(adapter);
-		udpPortsList.setAdapter(adapter2);
+		udpPortsList.setAdapter(adapter2); */
+		
 		// tempView.addView(listerPorts);
 
 		// ipViewText.add("");
@@ -188,8 +325,15 @@ public class portBlocker extends Fragment {
 							break;
 						}
 					}
+					for (i = 0; i < tcpFilterList.size(); i++) {
+						if (tcpFilterList.get(i).contains(portHold)) {
+							tcpFilterList.remove(i);
+							break;
+						}
+					}
 					
 					tcpViewText.add(portHold + " blocked");
+					tcpFilterList.add(portHold + " blocked");
 					adapter.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
@@ -221,7 +365,14 @@ public class portBlocker extends Fragment {
 							break;
 						}
 					}
+					for (i = 0; i < tcpFilterList.size(); i++) {
+						if (tcpFilterList.get(i).contains(portHold)) {
+							tcpFilterList.remove(i);
+							break;
+						}
+					}
 					tcpViewText.add(portHold + " opened");
+					tcpFilterList.add(portHold + " opened");
 					adapter.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
@@ -253,7 +404,14 @@ public class portBlocker extends Fragment {
 							break;
 						}
 					}
+					for (i = 0; i < udpFilterList.size(); i++) {
+						if (udpFilterList.get(i).contains(portHold)) {
+							udpFilterList.remove(i);
+							break;
+						}
+					}
 					udpViewText.add(portHold + " blocked");
+					udpFilterList.add(portHold + " blocked");
 					adapter2.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
@@ -285,8 +443,15 @@ public class portBlocker extends Fragment {
 							break;
 						}
 					}
+					for (i = 0; i < udpFilterList.size(); i++) {
+						if (udpFilterList.get(i).contains(portHold)) {
+							udpFilterList.remove(i);
+							break;
+						}
+					}
 					
 					udpViewText.add(portHold + " opened");
+					udpFilterList.add(portHold + " opened");
 					adapter2.notifyDataSetChanged();
 
 					// TODO add error checking for the above here

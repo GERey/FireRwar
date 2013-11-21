@@ -18,5 +18,10 @@
     <string name="addPortClose">Block TCP</string>
     <string name="openUdpButton">Open UDP</string>
     <string name="closeUdpButton">Block UDP</string>
+    
+    <string name="filterMenu">Filter</string>
+    <string name="filterOpen">Open</string>
+    <string name="filterClosed">Closed</string>
+    <string name="filterAll">Show All</string>
 
 </resources>
