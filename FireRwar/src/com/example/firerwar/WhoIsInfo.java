@@ -133,6 +133,23 @@ public class WhoIsInfo extends Fragment {
 
 	}
 	
+	public String parseData(String input) {
+		String output = "";
+		
+		String[] in = input.split("\n");
+		int i, j;
+		
+		for (i = 0; i < in.length; i++) {
+			if (in[i].contains("Domain Name:")) {
+				for (j = i; j < in.length; j++) {
+					output += in[j] + "\n";
+				}
+				return output;
+			}
+		}
+		return input;
+	}
+	
 	public void printData() {
 		data.clear();
 		data.add("Address Queried: " + query);
@@ -164,11 +181,9 @@ public class WhoIsInfo extends Fragment {
 								}
 								Log.d("output", dataOut);
 								
-								data.add("output2 is: " + dataOut);
-							/*	data.add("OrgName: ");
-								data.add("OrgId: ");
-								data.add("Address: ");
-								data.add("City: "); */
+								dataOut = parseData(dataOut);
+								
+								data.add("results:\n " + dataOut);
 								adapter.notifyDataSetChanged();
 								Log.d("eloui", "added data!");
 								
@@ -186,11 +201,7 @@ public class WhoIsInfo extends Fragment {
 		} catch (Exception e) {
 			Log.d("whois", "exception somewhere...");
 		}
-		data.add ("output is: " + dataOut);
-		data.add("OrgName: ");
-		data.add("OrgId: ");
-		data.add("Address: ");
-		data.add("City: ");
+		data.add("\n");
 		adapter.notifyDataSetChanged();
 		Log.d("eloui", "added stuff!");
 	}
