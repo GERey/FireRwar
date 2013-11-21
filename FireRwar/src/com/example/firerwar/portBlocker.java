@@ -7,9 +7,11 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,9 +63,20 @@ public class portBlocker extends Fragment {
 	protected static final int FILTER_CLOSE = 2;
 	
 	public static final String ARG_SECTION_NUMBER = "BOOP";
+	
+	DatabaseManager db;
 
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		db = new DatabaseManager(mContext);
+
+	}
+	
 	public void setContext(Context mContext) {
 		this.mContext = mContext;
+		
 	}
 
 	@Override
@@ -113,14 +126,33 @@ public class portBlocker extends Fragment {
 				android.R.layout.simple_list_item_1, tcpFilterList);
 		adapter2 = new ArrayAdapter<String>(mContext,
 				android.R.layout.simple_list_item_1, udpFilterList);
+		
+		int i = 0;
+		ArrayList<String> temp = db.getAllPorts();
+		while(temp.size() != i){
+			tcpViewText.add(temp.get(i)+ "blocked");
+			tcpFilterList.add(temp.get(i)+ " blocked");
+			try {
+				blockport(Integer.parseInt(temp.get(i)));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			i++;
+		}
 
 		tcpPortsList.setAdapter(adapter);
 		udpPortsList.setAdapter(adapter2);
+
 		
 	}
 
 	public void blockport(final int port) throws IOException {
 		temp = new Socket();
+		db.addPort(port);
 
 		try {
 			new Thread(new Runnable() {
@@ -154,6 +186,7 @@ public class portBlocker extends Fragment {
 
 	public void openport(final int port) throws IOException {
 		sock = new ServerSocket();
+		db.addPort(port);
 
 		try {
 			new Thread(new Runnable() {
@@ -259,7 +292,6 @@ public class portBlocker extends Fragment {
 	public View printNetworkSettings(Context mContext) {
 
 		closeTCPButton.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				String portHold = portText.getText().toString();
@@ -280,9 +312,12 @@ public class portBlocker extends Fragment {
 							break;
 						}
 					}
+
 					
 					tcpViewText.add(portHold + " blocked");
 					tcpFilterList.add(portHold + " blocked");
+
+
 					adapter.notifyDataSetChanged();
 
 					// TODO add error checking for the above here
