@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView.*;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -76,8 +75,6 @@ public class portBlocker extends Fragment {
 		redText = R.color.blockRed;
 
 		try {
-			// openport(2222);
-			// blockport(2222);
 			System.out.println("derp");
 
 		} catch (Exception e) {
@@ -111,11 +108,7 @@ public class portBlocker extends Fragment {
 		
 		tcpDisplay.setText("TCP Ports");
 		udpDisplay.setText("UDP Ports");
-				
-		//adapter = new ArrayAdapter<String>(mContext,
-		//		android.R.layout.simple_list_item_1, tcpViewText);
-		//adapter2 = new ArrayAdapter<String>(mContext,
-		//		android.R.layout.simple_list_item_1, udpViewText);
+		
 		adapter = new ArrayAdapter<String>(mContext,
 				android.R.layout.simple_list_item_1, tcpFilterList);
 		adapter2 = new ArrayAdapter<String>(mContext,
@@ -127,7 +120,6 @@ public class portBlocker extends Fragment {
 	}
 
 	public void blockport(final int port) throws IOException {
-		// sock = new ServerSocket();
 		temp = new Socket();
 
 		try {
@@ -135,7 +127,6 @@ public class portBlocker extends Fragment {
 
 				@Override
 				public void run() {
-					// while(true) {
 					try {
 
 						if (!sock.isClosed()) {
@@ -145,9 +136,6 @@ public class portBlocker extends Fragment {
 							} else
 								sock.close();
 
-							// temp = new Socket("10.", port);
-							// temp.setReuseAddress(true);
-							// temp.close();
 						}
 
 					} catch (Exception e) {
@@ -269,46 +257,7 @@ public class portBlocker extends Fragment {
 	}
 
 	public View printNetworkSettings(Context mContext) {
-		/*TextView tcpDisplay = (TextView) rootView.findViewById(R.id.TCPports);
-		TextView udpDisplay = (TextView) rootView.findViewById(R.id.UDPports);
-		LinearLayout tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
-		ListView tcpPortsList = (ListView) rootView.findViewById(R.id.PortItems);
-		ListView udpPortsList = (ListView) rootView.findViewById(R.id.UDPItems);
-		
-		Button closeTCPButton = (Button) rootView.findViewById(R.id.portClosedButton);
-		Button openTCPButton = (Button) rootView.findViewById(R.id.portOpenButton);
-		Button closeUDPButton = (Button)rootView.findViewById(R.id.UDPcloseButton);
-		Button openUDPButton = (Button)rootView.findViewById(R.id.UDPopenButton); */
-		
-	/*	portText = (EditText) rootView.findViewById(R.id.portText);
-		portText.setRawInputType(Configuration.KEYBOARD_12KEY);
 
-		tcpViewText = new ArrayList<String>();
-		udpViewText = new ArrayList<String>();
-
-		tcpDisplay.setText("TCP Ports (blocked=red, open=green)");
-		udpDisplay.setText("UDP Ports (blocked=red, open=green)");
-		// tempView.addView(portDisplay);
-
-		// tempView.addView(ipAddress);
-
-		adapter = new ArrayAdapter<String>(mContext,
-				android.R.layout.simple_list_item_1, tcpViewText);
-		adapter2 = new ArrayAdapter<String>(mContext,
-				android.R.layout.simple_list_item_1, udpViewText);
-
-		// ipAddress.setText(intToIp(addr.ipAddress)+"\n");
-
-		// tempView = ((LinearLayout) rootView.findViewById(R.id.listItems));
-
-		tcpPortsList.setAdapter(adapter);
-		udpPortsList.setAdapter(adapter2); */
-		
-		// tempView.addView(listerPorts);
-
-		// ipViewText.add("");
-		// udpViewText.add("udp stuff here");
-		// TODO: make buttons take in data and do correct stuff...
 		closeTCPButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -469,8 +418,6 @@ public class portBlocker extends Fragment {
 		
 		adapter.notifyDataSetChanged();
 		adapter2.notifyDataSetChanged();
-		// ((TextView)
-		// rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
 
 		return tempView;
 
