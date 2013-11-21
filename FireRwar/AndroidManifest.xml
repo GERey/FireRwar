@@ -34,6 +34,9 @@
             android:name="com.example.firerwar.VpnClient"
             android:label="@string/title_activity_vpn_client" >
         </activity>
+        <activity 
+            android:name="com.example.firerwar.metricsViewer"
+            android:label="@string/metrics_viewer"></activity>
 
         <service
             android:name="com.example.firerwar.vpnIntentMetrics"

@@ -4,145 +4,244 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-import com.jjoe64.graphview.CustomLabelFormatter;
-import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
-import com.jjoe64.graphview.LineGraphView;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphView.LegendAlign;
-import com.jjoe64.graphview.GraphViewSeries;
+import org.achartengine.ChartFactory;
+import org.achartengine.GraphicalView;
+import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
+import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYSeriesRenderer;
 
+import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.TrafficStats;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
+import java.util.Random;
 
-public class metricsViewer extends Fragment {
+public class metricsViewer extends FragmentActivity {
 
-	ServerSocket sock;
-	Socket temp;
+	private XYMultipleSeriesDataset DownloadDataSet = new XYMultipleSeriesDataset();
+	private XYMultipleSeriesRenderer DownloadRenderer = new XYMultipleSeriesRenderer();
+	private XYSeries DLCurrentSeries; /*
+									 * make this an arrayList of xy series ,
+									 * then loop through that list updating the
+									 * the graph with the repective values
+									 */
+	private GraphicalView DLChartView;
+	private final Handler mHandler = new Handler();
+	private Runnable mTimer1;
+	public static int y;
+	public ArrayList<XYSeries> m_SeriesData;
+	public ArrayList<String> dataAppUsage;
+	public ArrayList<Integer> uidStorage = new ArrayList<Integer>();
+	public ArrayList<Integer> uidsList = new ArrayList<Integer>();
 
-	Context mContext;
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.graphs);
+		DownloadRenderer.setAxisTitleTextSize(16);
+		DownloadRenderer.setChartTitleTextSize(20);
+		DownloadRenderer.setLabelsTextSize(30);
+		DownloadRenderer.setLegendTextSize(15);
+		DownloadRenderer.setMargins(new int[] { 10, 30, 0, 0 });
+		DownloadRenderer.setYLabelsPadding(10);
+		DownloadRenderer.setAxesColor(Color.CYAN);
+		DownloadRenderer.setZoomEnabled(true, false);
+		
+		
+		//addNewSeries(0);
 
-	public void setContext(Context mContext) {
-		this.mContext = mContext;
+		String seriesTitle = "Download";
+		XYSeries series = new XYSeries(seriesTitle);
+
+		DownloadDataSet.addSeries(series);
+		DLCurrentSeries = series;
+		
+		XYSeriesRenderer renderer = new XYSeriesRenderer();
+		renderer.setColor(Color.RED);
+		DownloadRenderer.addSeriesRenderer(renderer);
+		dataSetup();
+		addNewSeries(1);
+//		
+//		/**/
+//		seriesTitle = "Upload";
+//		series = new XYSeries(seriesTitle);
+//
+//		DownloadDataSet.addSeries(series);
+//		DLCurrentSeries = series;
+//		
+//
+//		renderer = new XYSeriesRenderer();
+//		renderer.setColor(Color.CYAN);
+//		DownloadRenderer.addSeriesRenderer(renderer);
+//		printNetworkSettings();
+
+	}
+	
+	/* function that will add series to the graph*/
+	public void addNewSeries (int position) {
+		
+		Random rand = new Random();
+		String temp1 = dataAppUsage.get(position);
+		uidsList.add(uidStorage.get(position));
+		String packages[] = temp1.split("\\.|:");
+		String seriesTitle = packages[1];
+//		Scanner  scan = new Scanner(temp1).useDelimiter(".");
+//		String seriesTitle = "";
+//		if (scan.hasNext()){
+//			seriesTitle = scan.next();
+//			if (scan.hasNext()){
+//				seriesTitle = scan.next();
+//				Toast.makeText(this, seriesTitle, Toast.LENGTH_SHORT).show();
+//			}
+//		}
+		XYSeries series = new XYSeries(seriesTitle);
+		DownloadDataSet.addSeries(series);
+		/* Not sure about setting the current series just a proof of concept*/
+		
+		/*Sets up the second renderer*/
+		XYSeriesRenderer renderer = new XYSeriesRenderer();
+		renderer.setColor(Color.rgb(rand.nextInt(), rand.nextInt(), rand.nextInt())); /* Make random color generator*/
+		DownloadRenderer.addSeriesRenderer(renderer);
+		
+		
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	protected void onPause() {
 
-		View rootView = inflater.inflate(R.layout.form, container, false);
-
-		return printNetworkSettings(mContext, rootView);
+		super.onPause();
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (DLChartView == null) {
+			LinearLayout layout = (LinearLayout) findViewById(R.id.graph);
+			DLChartView = ChartFactory.getLineChartView(this, DownloadDataSet,
+					DownloadRenderer);
+
+			layout.addView(DLChartView);
+		} else {
+			DLChartView.repaint();
+		}
+
+		mTimer1 = new Runnable() {
+			@Override
+			public void run() {
+				//printNetworkSettings();
+				XYSeries[] temp = DownloadDataSet.getSeries();
+				
+				DLCurrentSeries=temp[0];
+				DLCurrentSeries.add(y, TrafficStats.getTotalRxBytes());
+				
+				DLCurrentSeries=temp[1];
+				DLCurrentSeries.add(y, TrafficStats.getTotalTxBytes());
+//				
+//				/*0 Is always the downloads and 1 is always the uploads*/
+				for (int i = 2; i < temp.length; i++){
+					
+					
+					DLCurrentSeries=temp[i];
+					/*uid is minus two, because two lists are added by default who carry no uid
+					 * Download and Upload Stats*/
+ 					DLCurrentSeries.add(y, TrafficStats.getUidRxBytes(uidsList.get(i-2)));
+					
+//					if (temp[i].getTitle().equals("Download")){
+//						DLCurrentSeries=temp[i];
+//						DLCurrentSeries.add(y, TrafficStats.getTotalRxBytes());
+//					}
+//					else if (temp[i].getTitle().equals("Upload")){
+//						DLCurrentSeries=temp[i];
+//						DLCurrentSeries.add(y, TrafficStats.getTotalTxBytes());
+//					}
+				}
+				y++;
+				if (DLChartView != null) {
+					DLChartView.repaint();
+				}
+				mHandler.postDelayed(this, 2000);
+			}
+		};
+		mHandler.postDelayed(mTimer1, 300);
+
+	}
+
 
 	/*
 	 * You'll want to make a uid hashtable and then update the values in the
 	 * listview whenever one of them increases, these increases should also be
 	 * reflected in the graph view that I choose to use
 	 */
-	public View printNetworkSettings(Context mContext, View rootView) {
+	public View dataSetup() {
 
-		TextView portDisplay = (TextView) rootView.findViewById(R.id.Namer);
-		LinearLayout tempView = (LinearLayout) rootView
-				.findViewById(R.id.LinearPortHolder);
-		LinearLayout graphV = (LinearLayout) rootView.findViewById(R.id.graph);
-		ListView listerPorts = (ListView) rootView.findViewById(R.id.PortItems);
+		TextView portDisplay = (TextView) findViewById(R.id.Namer);
+		LinearLayout tempView = (LinearLayout) findViewById(R.id.LinearPortHolder);
+		ListView listerPorts = (ListView) findViewById(R.id.PortItems);
 
-		ArrayList<String> ipViewText = new ArrayList<String>();
+		dataAppUsage = new ArrayList<String>();
 
 		ArrayAdapter<String> adapter;
-		adapter = new ArrayAdapter<String>(mContext,
-				android.R.layout.simple_list_item_1, ipViewText);
+		adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, dataAppUsage);
 
 		listerPorts.setAdapter(adapter);
 
 		// calculates how much data has been downloaded and uploaded from boot.
 		long rxBytes = TrafficStats.getTotalRxBytes();
 		long txBytes = TrafficStats.getTotalTxBytes();
-		ipViewText.add("Download: " + Long.toString(rxBytes));
-		ipViewText.add("Uploaded: " + Long.toString(txBytes));
+		dataAppUsage.add("Mobile.Download: " + Long.toString(rxBytes));
+		dataAppUsage.add("Mobile.Uploaded: " + Long.toString(txBytes));
 
 		// handles reading in all of the applications name and their data
-		readApplicationPackageNames(ipViewText);
+		readApplicationPackageNames(dataAppUsage);
+		listerPorts.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int position, long rowId) 
+			{
+				int i = 0;
+				addNewSeries(position);
+				Log.d("Long clicked","hi");
+
+				//Toast.makeText(this, "You long clicked a thing!",Toast.LENGTH_SHORT).show();
+				return false;
+				
+			}});
 
 		// handles adding the graphview and it's colors/layouts
-		graphV.addView(graphInitializer(rxBytes, txBytes));
 
 		adapter.notifyDataSetChanged();
 		return tempView;
 
 	}
 
-	public GraphView graphInitializer(long downloaded, long uploaded) {
-
-		GraphViewSeries downloadSeries = new GraphViewSeries("Download",
-				new GraphViewSeriesStyle(Color.RED, 10), new GraphViewData[] {
-						new GraphViewData(1, downloaded),
-						new GraphViewData(4, 20000000 + downloaded) });
-		GraphViewSeries uploadSeries = new GraphViewSeries("Uploaded",
-				new GraphViewSeriesStyle(Color.BLUE, 10), new GraphViewData[] {
-						new GraphViewData(1, uploaded),
-						new GraphViewData(4, 10000000 + uploaded) });
-		GraphView graphView = new LineGraphView(mContext, "Network Data Graph");
-
-		// graphView.setVerticalLabels(new String[]{});
-		graphView.addSeries(downloadSeries);
-		graphView.addSeries(uploadSeries);
-		graphView.getGraphViewStyle().setHorizontalLabelsColor(Color.GREEN);
-
-		graphView.setCustomLabelFormatter(new CustomLabelFormatter() {
-
-			@Override
-			public String formatLabel(double val, boolean isValueX) {
-				int value = (int) val;
-				value = value / 1000;
-				if (!isValueX) {
-					if (value <= 1000) {
-						return "1 MB";
-					} else if (value == 5000) {
-						return "5 MB";
-					} else if (value == 20000) {
-						return "20 MB";
-					} else if (value == 40000) {
-						return "40 MB";
-					} else if (value == 100000) {
-						return "100 MB";
-					}
-				}
-				return null;
-			}
-		});
-		// graphView.
-		graphView.getGraphViewStyle().setVerticalLabelsColor(Color.BLACK);
-		graphView.setShowLegend(true);
-		graphView.setLegendAlign(LegendAlign.TOP);
-		graphView.setLegendWidth(300);
-		graphView.setManualYAxisBounds(100000000, 0.0);
-
-		return graphView;
-
-	}
-
 	public ArrayList<String> readApplicationPackageNames(
 			ArrayList<String> infoPackage) {
 
-		PackageManager packer = mContext.getPackageManager();
+		PackageManager packer = this.getPackageManager();
 		File dir = new File("/proc/uid_stat/");
 		String[] children = dir.list();
 		List<Integer> uids = new ArrayList<Integer>();
@@ -161,6 +260,7 @@ public class metricsViewer extends Fragment {
 					while ((line = br.readLine()) != null) {
 						infoPackage
 								.add(packer.getNameForUid(uid) + ": " + line);
+						uidStorage.add(uid);
 					}
 					br.close();
 
@@ -174,4 +274,5 @@ public class metricsViewer extends Fragment {
 		}
 		return infoPackage;
 	}
+
 }

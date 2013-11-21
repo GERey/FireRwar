@@ -216,7 +216,7 @@ public class portBlocker extends Fragment {
 		int i;
 		tcpFilterList.clear();
 		udpFilterList.clear();
-		
+
 		switch (filter) {
 		case FILTER_OPEN:
 			for (i = 0; i < tcpViewText.size(); i++) {
