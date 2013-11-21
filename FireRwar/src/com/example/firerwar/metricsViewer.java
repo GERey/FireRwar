@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -34,6 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
+import java.util.Random;
 
 public class metricsViewer extends FragmentActivity {
 
@@ -49,6 +51,9 @@ public class metricsViewer extends FragmentActivity {
 	private Runnable mTimer1;
 	public static int y;
 	public ArrayList<XYSeries> m_SeriesData;
+	public ArrayList<String> dataAppUsage;
+	public ArrayList<Integer> uidStorage = new ArrayList<Integer>();
+	public ArrayList<Integer> uidsList = new ArrayList<Integer>();
 
 	/** Called when the activity is first created. */
 	@Override
@@ -57,29 +62,69 @@ public class metricsViewer extends FragmentActivity {
 		setContentView(R.layout.graphs);
 		DownloadRenderer.setAxisTitleTextSize(16);
 		DownloadRenderer.setChartTitleTextSize(20);
-		DownloadRenderer.setLabelsTextSize(15);
+		DownloadRenderer.setLabelsTextSize(30);
 		DownloadRenderer.setLegendTextSize(15);
-		DownloadRenderer.setMargins(new int[] { 20, 30, 15, 0 });
+		DownloadRenderer.setMargins(new int[] { 10, 30, 0, 0 });
 		DownloadRenderer.setYLabelsPadding(10);
-		DownloadRenderer.setAxesColor(Color.YELLOW);
+		DownloadRenderer.setAxesColor(Color.CYAN);
+		DownloadRenderer.setZoomEnabled(true, false);
+		
+		
+		//addNewSeries(0);
 
-		String seriesTitle = "Download Display";
+		String seriesTitle = "Download";
 		XYSeries series = new XYSeries(seriesTitle);
 
 		DownloadDataSet.addSeries(series);
 		DLCurrentSeries = series;
-		/**/
 		
-
 		XYSeriesRenderer renderer = new XYSeriesRenderer();
 		renderer.setColor(Color.RED);
 		DownloadRenderer.addSeriesRenderer(renderer);
-		printNetworkSettings();
+		dataSetup();
+		addNewSeries(1);
+//		
+//		/**/
+//		seriesTitle = "Upload";
+//		series = new XYSeries(seriesTitle);
+//
+//		DownloadDataSet.addSeries(series);
+//		DLCurrentSeries = series;
+//		
+//
+//		renderer = new XYSeriesRenderer();
+//		renderer.setColor(Color.CYAN);
+//		DownloadRenderer.addSeriesRenderer(renderer);
+//		printNetworkSettings();
 
 	}
 	
 	/* function that will add series to the graph*/
-	public void addNewSeries () {
+	public void addNewSeries (int position) {
+		
+		Random rand = new Random();
+		String temp1 = dataAppUsage.get(position);
+		uidsList.add(uidStorage.get(position));
+		String packages[] = temp1.split("\\.|:");
+		String seriesTitle = packages[1];
+//		Scanner  scan = new Scanner(temp1).useDelimiter(".");
+//		String seriesTitle = "";
+//		if (scan.hasNext()){
+//			seriesTitle = scan.next();
+//			if (scan.hasNext()){
+//				seriesTitle = scan.next();
+//				Toast.makeText(this, seriesTitle, Toast.LENGTH_SHORT).show();
+//			}
+//		}
+		XYSeries series = new XYSeries(seriesTitle);
+		DownloadDataSet.addSeries(series);
+		/* Not sure about setting the current series just a proof of concept*/
+		
+		/*Sets up the second renderer*/
+		XYSeriesRenderer renderer = new XYSeriesRenderer();
+		renderer.setColor(Color.rgb(rand.nextInt(), rand.nextInt(), rand.nextInt())); /* Make random color generator*/
+		DownloadRenderer.addSeriesRenderer(renderer);
+		
 		
 	}
 
@@ -106,7 +151,32 @@ public class metricsViewer extends FragmentActivity {
 			@Override
 			public void run() {
 				//printNetworkSettings();
+				XYSeries[] temp = DownloadDataSet.getSeries();
+				
+				DLCurrentSeries=temp[0];
 				DLCurrentSeries.add(y, TrafficStats.getTotalRxBytes());
+				
+				DLCurrentSeries=temp[1];
+				DLCurrentSeries.add(y, TrafficStats.getTotalTxBytes());
+//				
+//				/*0 Is always the downloads and 1 is always the uploads*/
+				for (int i = 2; i < temp.length; i++){
+					
+					
+					DLCurrentSeries=temp[i];
+					/*uid is minus two, because two lists are added by default who carry no uid
+					 * Download and Upload Stats*/
+ 					DLCurrentSeries.add(y, TrafficStats.getUidRxBytes(uidsList.get(i-2)));
+					
+//					if (temp[i].getTitle().equals("Download")){
+//						DLCurrentSeries=temp[i];
+//						DLCurrentSeries.add(y, TrafficStats.getTotalRxBytes());
+//					}
+//					else if (temp[i].getTitle().equals("Upload")){
+//						DLCurrentSeries=temp[i];
+//						DLCurrentSeries.add(y, TrafficStats.getTotalTxBytes());
+//					}
+				}
 				y++;
 				if (DLChartView != null) {
 					DLChartView.repaint();
@@ -118,51 +188,44 @@ public class metricsViewer extends FragmentActivity {
 
 	}
 
-	//
-	// @Override
-	// public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	// Bundle savedInstanceState) {
-	//
-	// View rootView = inflater.inflate(R.layout.form, container, false);
-	//
-	// return printNetworkSettings(mContext, rootView);
-	// }
 
 	/*
 	 * You'll want to make a uid hashtable and then update the values in the
 	 * listview whenever one of them increases, these increases should also be
 	 * reflected in the graph view that I choose to use
 	 */
-	public View printNetworkSettings() {
+	public View dataSetup() {
 
 		TextView portDisplay = (TextView) findViewById(R.id.Namer);
 		LinearLayout tempView = (LinearLayout) findViewById(R.id.LinearPortHolder);
 		ListView listerPorts = (ListView) findViewById(R.id.PortItems);
 
-		ArrayList<String> ipViewText = new ArrayList<String>();
+		dataAppUsage = new ArrayList<String>();
 
 		ArrayAdapter<String> adapter;
 		adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, ipViewText);
+				android.R.layout.simple_list_item_1, dataAppUsage);
 
 		listerPorts.setAdapter(adapter);
 
 		// calculates how much data has been downloaded and uploaded from boot.
 		long rxBytes = TrafficStats.getTotalRxBytes();
 		long txBytes = TrafficStats.getTotalTxBytes();
-		ipViewText.add("Download: " + Long.toString(rxBytes));
-		ipViewText.add("Uploaded: " + Long.toString(txBytes));
+		dataAppUsage.add("Mobile.Download: " + Long.toString(rxBytes));
+		dataAppUsage.add("Mobile.Uploaded: " + Long.toString(txBytes));
 
 		// handles reading in all of the applications name and their data
-		readApplicationPackageNames(ipViewText);
+		readApplicationPackageNames(dataAppUsage);
 		listerPorts.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) 
+					int position, long rowId) 
 			{
 				int i = 0;
+				addNewSeries(position);
 				Log.d("Long clicked","hi");
+
 				//Toast.makeText(this, "You long clicked a thing!",Toast.LENGTH_SHORT).show();
 				return false;
 				
@@ -197,6 +260,7 @@ public class metricsViewer extends FragmentActivity {
 					while ((line = br.readLine()) != null) {
 						infoPackage
 								.add(packer.getNameForUid(uid) + ": " + line);
+						uidStorage.add(uid);
 					}
 					br.close();
 
