@@ -14,8 +14,15 @@
     <string name="LookupButton">Lookup!</string>
     <string name="enterQuery">WhoIs IP Address Goes Here</string>
     <string name="enterPort">Enter port</string>
-    <string name="addPortOpen">Add Open Port</string>
-    <string name="addPortClose">Add Blocked Port</string>
     <string name="metrics_viewer">metrics viewer</string>
+    <string name="addPortOpen">Open TCP</string>
+    <string name="addPortClose">Block TCP</string>
+    <string name="openUdpButton">Open UDP</string>
+    <string name="closeUdpButton">Block UDP</string>
+    
+    <string name="filterMenu">Filter</string>
+    <string name="filterOpen">Open</string>
+    <string name="filterClosed">Closed</string>
+    <string name="filterAll">Show All</string>
 
 </resources>
