@@ -150,6 +150,8 @@ public class WhoIsInfo extends Fragment {
 		return input;
 	}
 	
+	//TODO: Fix bug where need to start inputting a second query in order to see results...
+	
 	public void printData() {
 		data.clear();
 		data.add("Address Queried: " + query);
