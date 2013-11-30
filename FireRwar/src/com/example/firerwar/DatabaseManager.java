@@ -35,7 +35,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase databoots) {
-		databoots = this.getWritableDatabase();
+		//databoots = this.getWritableDatabase();
 		String CREATE_PORTS = "CREATE TABLE " + TABLE_PORTS
 				+ " (" + PORT_KEY_ID + " INTEGER PRIMARY KEY, " +
 				PORT_NUM + " INTEGER UNIQUE " + ")";

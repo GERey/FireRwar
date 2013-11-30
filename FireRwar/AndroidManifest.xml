@@ -5,17 +5,20 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="11"
         android:targetSdkVersion="18" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/firerwaricon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme" 
+        >
         <activity
             android:name="com.example.firerwar.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            
+            android:screenOrientation="locked">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +28,8 @@
         <activity
             android:name="com.example.firerwar.DisplayMessageActivity"
             android:label="@string/title_activity_display_message"
-            android:parentActivityName="com.example.firerwar.MainActivity" >
+            android:parentActivityName="com.example.firerwar.MainActivity" 
+           >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.firerwar.MainActivity" />
@@ -36,7 +40,8 @@
         </activity>
         <activity 
             android:name="com.example.firerwar.metricsViewer"
-            android:label="@string/metrics_viewer"></activity>
+            android:label="@string/metrics_viewer"
+            android:screenOrientation="locked"></activity>
 
         <service
             android:name="com.example.firerwar.vpnIntentMetrics"
