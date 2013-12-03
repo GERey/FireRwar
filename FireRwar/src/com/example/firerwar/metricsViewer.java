@@ -224,9 +224,6 @@ public class metricsViewer extends FragmentActivity {
 			{
 				int i = 0;
 				addNewSeries(position);
-				Log.d("Long clicked","hi");
-
-				//Toast.makeText(this, "You long clicked a thing!",Toast.LENGTH_SHORT).show();
 				return false;
 				
 			}});
