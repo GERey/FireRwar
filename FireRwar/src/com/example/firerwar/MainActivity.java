@@ -3,8 +3,10 @@ package com.example.firerwar;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
@@ -34,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -41,12 +44,17 @@ import android.widget.TextView;
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
 
+	public int port_flag = 0;
+	public int netinfo_flag = 0;
+	public int whois_flag = 0;
+	public int metrics_flag = 0;
 	AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 	ViewPager mViewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.activity_main);
 		
 		mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(
@@ -74,12 +82,88 @@ public class MainActivity extends FragmentActivity implements
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
+						//debug_flag=0;
 						// When swiping between different app sections, select
 						// the corresponding tab.
 						// We can also use ActionBar.Tab#select() to do this if
 						// we have a reference to the
 						// Tab.
 						actionBar.setSelectedNavigationItem(position);
+						
+						if(position == 1) {
+							if(whois_flag == 0) {
+								
+								/*this should only need to happen once, but not in on create...*/
+										// 1. Instantiate an AlertDialog.Builder with its constructor
+										AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+										// 2. Chain together various setter methods to set the dialog characteristics
+										builder.setTitle("Whois")
+										       .setMessage("Put useful info here");
+										
+										builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+									           public void onClick(DialogInterface dialog, int id) {
+									               whois_flag = 1;
+									           }
+									       });
+
+										// 3. Get the AlertDialog from create()
+										AlertDialog dialog = builder.create();
+										dialog.show();
+										
+							}
+							
+						}
+						
+						if(position == 2) {
+							/*find a way to only display this once*/
+							if(port_flag == 0) {
+								
+								/*this should only need to happen once, but not in on create...*/
+										// 1. Instantiate an AlertDialog.Builder with its constructor
+										AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+										// 2. Chain together various setter methods to set the dialog characteristics
+										builder.setTitle("Port Blocker")
+										       .setMessage("When setting ports please do not use ports between 0 -1024");
+										
+										builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+									           public void onClick(DialogInterface dialog, int id) {
+									               port_flag = 1;
+									           }
+									       });
+
+										// 3. Get the AlertDialog from create()
+										AlertDialog dialog = builder.create();
+										dialog.show();
+										
+							}
+						}
+						
+						if(position == 3) {
+							if(metrics_flag == 0) {
+								
+								/*this should only need to happen once, but not in on create...*/
+										// 1. Instantiate an AlertDialog.Builder with its constructor
+										AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+										// 2. Chain together various setter methods to set the dialog characteristics
+										builder.setTitle("Metrics Viewer")
+										       .setMessage("Click the button to get started!");
+										
+										builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+									           public void onClick(DialogInterface dialog, int id) {
+									               metrics_flag = 1;
+									           }
+									       });
+
+										// 3. Get the AlertDialog from create()
+										AlertDialog dialog = builder.create();
+										dialog.show();
+										
+							}
+							
+						}
 					}
 				});
 
@@ -242,6 +326,7 @@ public class MainActivity extends FragmentActivity implements
 	public static class ipInfoShow extends Fragment {
 
 		Context mContext;
+		public int netinfo_flag = 0;
 
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -262,6 +347,7 @@ public class MainActivity extends FragmentActivity implements
 		public View printNetworkSettings(Context mContext, View rootView) {
 			// TextView ipAddress = new TextView(mContext);
 			// ListView tempView = (ListView) rootView;
+			
 			ArrayList<String> ipViewText = new ArrayList<String>();
 
 			ArrayAdapter<String> adapter;
@@ -284,6 +370,29 @@ public class MainActivity extends FragmentActivity implements
 			ipViewText.add("Alt DNS: " + intToIp(addr.dns2) + "\n");
 
 			adapter.notifyDataSetChanged();
+			
+			if(netinfo_flag == 0) {
+				
+				/*this should only need to happen once, but not in on create...*/
+						// 1. Instantiate an AlertDialog.Builder with its constructor
+						AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+						// 2. Chain together various setter methods to set the dialog characteristics
+						builder.setTitle("Netinfo")
+						       .setMessage("Put useful info here");
+						
+						builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					           public void onClick(DialogInterface dialog, int id) {
+					               netinfo_flag = 1;
+					           }
+					       });
+
+						// 3. Get the AlertDialog from create()
+						AlertDialog dialog = builder.create();
+						dialog.show();
+						
+			}
+			
 
 			// ((TextView)
 			// rootView.findViewById(android.R.id.text1)).setText(intToIp(addr.ipAddress)+"\n");
