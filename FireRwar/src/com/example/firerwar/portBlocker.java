@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView.*;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -419,6 +420,8 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View v) {
 				String portHold = portText.getText().toString();
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
 				
 				try {
@@ -471,6 +474,8 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View v) {
 				String portHold = portText.getText().toString();
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
 				
 				try {
@@ -510,6 +515,8 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View arg0) {
 				String portHold = portText.getText().toString();
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
 				
 				try {
@@ -548,6 +555,8 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View arg0) {
 				String portHold = portText.getText().toString();
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
 				
 				try {
