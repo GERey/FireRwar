@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -28,9 +29,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class portBlocker extends Fragment {
 	ServerSocket sock;
+	Boolean worked;
 	Socket temp;
 	public EditText portText;
 	public ArrayList<String> tcpViewText;
@@ -116,7 +119,7 @@ public class portBlocker extends Fragment {
 		openUDPButton = (Button)rootView.findViewById(R.id.UDPopenButton);
 		
 		portText = (EditText) rootView.findViewById(R.id.portText);
-		portText.setRawInputType(Configuration.KEYBOARD_12KEY);
+		//portText.setRawInputType(Configuration.KEYBOARD_12KEY);
 
 		tcpViewText = new ArrayList<String>();
 		udpViewText = new ArrayList<String>();
@@ -137,8 +140,17 @@ public class portBlocker extends Fragment {
 			tcpViewText.add(temp.get(i));
 			tcpFilterList.add(temp.get(i));
 			try {
-				//TODO have it either open or close the port and parse the string that comes out.
-				blockporttcp(Integer.parseInt(temp.get(i)));
+				
+				String openP = "opened";
+				String blockedP = "blocked";
+				Scanner portParse = new Scanner(temp.get(i)).useDelimiter(" ");
+				if(temp.contains(openP)){
+					openporttcp(Integer.parseInt(portParse.next()));
+				}
+				else if(temp.contains(blockedP)) {
+					blockporttcp(Integer.parseInt(portParse.next()));
+				}	
+
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -153,8 +165,15 @@ public class portBlocker extends Fragment {
 			udpViewText.add(temp.get(i));
 			udpFilterList.add(temp.get(i));
 			try {
-				//TODO have it either open or close the port 
-				blockportudp(Integer.parseInt(temp.get(i)));
+				String openP = "opened";
+				String blockedP = "blocked";
+				Scanner portParse = new Scanner(temp.get(i)).useDelimiter(" ");
+				if(temp.contains(openP)){
+					openportudp(Integer.parseInt(portParse.next()));
+				}
+				else if(temp.contains(blockedP)) {
+					blockportudp(Integer.parseInt(portParse.next()));
+				}	
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -167,13 +186,15 @@ public class portBlocker extends Fragment {
 		udpPortsList.setAdapter(adapter2);
 
 	}
-
-	public void blockporttcp(final int port) throws IOException {
+//TODO putting toasts in the thread fails hardcore, find another way to show to the user it doesn't work.
+	public Boolean blockporttcp(final int port) throws IOException {
 		temp = new Socket();
 		db.addPort(port,CLOSED,TCP);
+		worked = true;
+
 
 		try {
-			new Thread(new Runnable() {
+			Thread ports = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -189,22 +210,29 @@ public class portBlocker extends Fragment {
 						}
 
 					} catch (Exception e) {
-						System.out.println("thread blockport failed" + e);
+						worked = false;
+
+						System.out.println("thread blockport failed " + e);
+
 					}
 					// }
 
 				}
 
-			}).start();
+			});//.start();
+			ports.start();
 		} catch (Exception e) {
-			Log.d("blockport Exception", "" + e);
+			worked = false;
+			Log.d("blockport thread Exception", "" + e);
 		}
+		return worked;
 
 	}
 	
-	public void blockportudp(final int port) throws IOException {
+	public boolean blockportudp(final int port) throws IOException {
 		temp = new Socket();
 		db.addPort(port,CLOSED,UDP);
+		worked = true;
 
 		try {
 			new Thread(new Runnable() {
@@ -223,6 +251,7 @@ public class portBlocker extends Fragment {
 						}
 
 					} catch (Exception e) {
+						worked = false;
 						System.out.println("thread blockport failed" + e);
 					}
 					// }
@@ -231,13 +260,16 @@ public class portBlocker extends Fragment {
 
 			}).start();
 		} catch (Exception e) {
+			worked = false;
 			Log.d("blockport Exception", "" + e);
 		}
+		return worked;
 
 	}
 
-	public void openporttcp(final int port) throws IOException {
+	public boolean openporttcp(final int port) throws IOException {
 		sock = new ServerSocket();
+		worked = true;
 		db.addPort(port,OPEN,TCP);
 
 		try {
@@ -255,6 +287,8 @@ public class portBlocker extends Fragment {
 						}
 
 					} catch (Exception e) {
+						worked = false;
+
 						System.out.println("thread openport failed: " + e);
 					}
 
@@ -262,13 +296,17 @@ public class portBlocker extends Fragment {
 
 			}).start();
 		} catch (Exception e) {
+			worked = false;
 			Log.d("openport Exception", "" + e);
 		}
+		return worked;
 
 	}
 	
-	public void openportudp(final int port) throws IOException {
+	public boolean openportudp(final int port) throws IOException {
 		sock = new ServerSocket();
+		worked = true;
+
 		db.addPort(port,OPEN,UDP);
 
 		try {
@@ -286,6 +324,8 @@ public class portBlocker extends Fragment {
 						}
 
 					} catch (Exception e) {
+						worked = false;
+
 						System.out.println("thread openport failed: " + e);
 					}
 
@@ -293,9 +333,10 @@ public class portBlocker extends Fragment {
 
 			}).start();
 		} catch (Exception e) {
+			worked = false;
 			Log.d("openport Exception", "" + e);
 		}
-
+		return worked;
 	}
 	
 	@Override
@@ -382,6 +423,9 @@ public class portBlocker extends Fragment {
 				
 				try {
 					int port = Integer.parseInt(portHold);
+					/*this code removes the offending port then readds it */
+					/*the below code will have to be changed to include updates instead of 
+					 * removing it then readding it to the list */
 					
 					for (i = 0; i < tcpViewText.size(); i++) {
 						if (tcpViewText.get(i).contains(portHold)) {
@@ -396,18 +440,23 @@ public class portBlocker extends Fragment {
 						}
 					}
 
+					if (blockporttcp(port)){
 					
-					tcpViewText.add(portHold + " closed");
-					tcpFilterList.add(portHold + " closed");
+						tcpViewText.add(portHold + " closed");
+						tcpFilterList.add(portHold + " closed");
 
 
-					adapter.notifyDataSetChanged();
+						adapter.notifyDataSetChanged();
+					}
+					else{
+						Toast.makeText(portBlocker.this.mContext, "Blocking TCP port failed", Toast.LENGTH_SHORT).show();
+					}
 
 					// TODO add error checking for the above here and below here
 					//to notify the user that something went wrong with blocking the port. 
 					//there should probably be error checking else where as well. 
 
-					blockporttcp(port);
+					
 				} catch (IOException e) {
 					System.out.println(e + " failed in block port");
 				} catch (Exception e) {
@@ -416,7 +465,7 @@ public class portBlocker extends Fragment {
 
 			}
 		});
-
+//TODO need to implement update command so if you close a port that already exists it updates.
 		openTCPButton.setOnClickListener(new OnClickListener() {
 
 			@Override
