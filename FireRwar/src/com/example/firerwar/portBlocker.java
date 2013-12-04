@@ -435,6 +435,7 @@ public class portBlocker extends Fragment {
 					for (i = 0; i < tcpViewText.size(); i++) {
 						if (tcpViewText.get(i).contains(portHold)) {
 							tcpViewText.remove(i);
+							db.updatePortStatus(port, TCP, CLOSED);
 							break;
 						}
 					}
@@ -486,6 +487,7 @@ public class portBlocker extends Fragment {
 					for (i = 0; i < tcpViewText.size(); i++) {
 						if (tcpViewText.get(i).contains(portHold)) {
 							tcpViewText.remove(i);
+							db.updatePortStatus(port, TCP, OPEN);
 							break;
 						}
 					}
@@ -527,6 +529,8 @@ public class portBlocker extends Fragment {
 					for (i = 0; i < udpViewText.size(); i++) {
 						if (udpViewText.get(i).contains(portHold)) {
 							udpViewText.remove(i);
+							db.updatePortStatus(port, UDP, CLOSED);
+
 							break;
 						}
 					}
@@ -567,6 +571,8 @@ public class portBlocker extends Fragment {
 					for (i = 0; i < udpViewText.size(); i++) {
 						if (udpViewText.get(i).contains(portHold)) {
 							udpViewText.remove(i);
+							db.updatePortStatus(port, UDP, OPEN);
+
 							break;
 						}
 					}
