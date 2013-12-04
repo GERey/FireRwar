@@ -99,7 +99,7 @@ public class MainActivity extends FragmentActivity implements
 
 										// 2. Chain together various setter methods to set the dialog characteristics
 										builder.setTitle("Whois")
-										       .setMessage("Put useful info here");
+										       .setMessage("Enter a link to query and press 'Lookup!' to get results");
 										
 										builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 									           public void onClick(DialogInterface dialog, int id) {
@@ -379,7 +379,7 @@ public class MainActivity extends FragmentActivity implements
 
 						// 2. Chain together various setter methods to set the dialog characteristics
 						builder.setTitle("Netinfo")
-						       .setMessage("Put useful info here");
+						       .setMessage("Slide to other screens or select a tab at the top to go to that screen");
 						
 						builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 					           public void onClick(DialogInterface dialog, int id) {
