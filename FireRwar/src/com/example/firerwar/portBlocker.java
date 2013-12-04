@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.DhcpInfo;
@@ -58,6 +60,7 @@ public class portBlocker extends Fragment {
 	protected View rootView;
 
 	Context mContext;
+	public int dialog_flag = 0;
 
 	protected int greenText;
 	protected int redText;
@@ -79,6 +82,9 @@ public class portBlocker extends Fragment {
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		db = new DatabaseManager(mContext);
+		
+
+
 
 	}
 	
@@ -94,16 +100,11 @@ public class portBlocker extends Fragment {
 		rootView = inflater.inflate(R.layout.port_enter, container, false);
 		greenText = R.color.openGreen;
 		redText = R.color.blockRed;
-
-		try {
-			System.out.println("derp");
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		
+		
+		
 		initLayout();
+		
 		return printNetworkSettings(mContext);
 	}
 	
@@ -344,6 +345,7 @@ public class portBlocker extends Fragment {
 	public void onStart() {
 		setHasOptionsMenu(true);
 		super.onStart();
+		
 	}
 	
 	@Override
