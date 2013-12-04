@@ -129,10 +129,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
 		if(cursor !=null && cursor.moveToFirst()){
 			do {
 				if(cursor.getInt(2) == OPEN) {
-					portList.add(Integer.toString(cursor.getInt(1))+" OPEN");
+					portList.add(Integer.toString(cursor.getInt(1))+" opened");
 				}
 				else if(cursor.getInt(2) == CLOSED) {
-					portList.add(Integer.toString(cursor.getInt(1))+" CLOSED");
+					portList.add(Integer.toString(cursor.getInt(1))+" blocked");
 				}
 			}while (cursor.moveToNext());
 		}

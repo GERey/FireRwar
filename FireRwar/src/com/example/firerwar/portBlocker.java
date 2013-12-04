@@ -147,6 +147,7 @@ public class portBlocker extends Fragment {
 			i++;
 		}
 		
+		i = 0;
 		temp = db.getAllPorts(UDP);
 		while(temp.size() != i){
 			udpViewText.add(temp.get(i));
