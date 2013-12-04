@@ -61,6 +61,10 @@ public class portBlocker extends Fragment {
 	protected static final int FILTER_SHOW_ALL = 0;
 	protected static final int FILTER_OPEN = 1;
 	protected static final int FILTER_CLOSE = 2;
+	protected static final int TCP = 1;
+	protected static final int UDP = 0;
+	protected static final int OPEN = 1;
+	protected static final int CLOSED = 0;
 	
 	public static final String ARG_SECTION_NUMBER = "BOOP";
 	
@@ -128,17 +132,31 @@ public class portBlocker extends Fragment {
 				android.R.layout.simple_list_item_1, udpFilterList);
 		
 		int i = 0;
-		ArrayList<String> temp = db.getAllPorts();
+		ArrayList<String> temp = db.getAllPorts(TCP);
 		while(temp.size() != i){
-			tcpViewText.add(temp.get(i)+ "blocked");
-			tcpFilterList.add(temp.get(i)+ " blocked");
+			tcpViewText.add(temp.get(i));
+			tcpFilterList.add(temp.get(i));
 			try {
-				blockport(Integer.parseInt(temp.get(i)));
+				//TODO have it either open or close the port and parse the string that comes out.
+				blockporttcp(Integer.parseInt(temp.get(i)));
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			i++;
+		}
+		
+		temp = db.getAllPorts(UDP);
+		while(temp.size() != i){
+			udpViewText.add(temp.get(i));
+			udpFilterList.add(temp.get(i));
+			try {
+				//TODO have it either open or close the port 
+				blockportudp(Integer.parseInt(temp.get(i)));
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			i++;
@@ -147,12 +165,45 @@ public class portBlocker extends Fragment {
 		tcpPortsList.setAdapter(adapter);
 		udpPortsList.setAdapter(adapter2);
 
-		
 	}
 
-	public void blockport(final int port) throws IOException {
+	public void blockporttcp(final int port) throws IOException {
 		temp = new Socket();
-		db.addPort(port);
+		db.addPort(port,CLOSED,TCP);
+
+		try {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+
+						if (!sock.isClosed()) {
+							if (!sock.isBound()) {
+								sock = new ServerSocket(port);
+								sock.close();
+							} else
+								sock.close();
+
+						}
+
+					} catch (Exception e) {
+						System.out.println("thread blockport failed" + e);
+					}
+					// }
+
+				}
+
+			}).start();
+		} catch (Exception e) {
+			Log.d("blockport Exception", "" + e);
+		}
+
+	}
+	
+	public void blockportudp(final int port) throws IOException {
+		temp = new Socket();
+		db.addPort(port,CLOSED,UDP);
 
 		try {
 			new Thread(new Runnable() {
@@ -184,9 +235,40 @@ public class portBlocker extends Fragment {
 
 	}
 
-	public void openport(final int port) throws IOException {
+	public void openporttcp(final int port) throws IOException {
 		sock = new ServerSocket();
-		db.addPort(port);
+		db.addPort(port,OPEN,TCP);
+
+		try {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+
+						if (!sock.isBound()) {
+							sock = new ServerSocket(port);
+
+							sock.accept();
+
+						}
+
+					} catch (Exception e) {
+						System.out.println("thread openport failed: " + e);
+					}
+
+				}
+
+			}).start();
+		} catch (Exception e) {
+			Log.d("openport Exception", "" + e);
+		}
+
+	}
+	
+	public void openportudp(final int port) throws IOException {
+		sock = new ServerSocket();
+		db.addPort(port,OPEN,UDP);
 
 		try {
 			new Thread(new Runnable() {
@@ -314,17 +396,18 @@ public class portBlocker extends Fragment {
 					}
 
 					
-					tcpViewText.add(portHold + " blocked");
-					tcpFilterList.add(portHold + " blocked");
+					tcpViewText.add(portHold + " closed");
+					tcpFilterList.add(portHold + " closed");
 
 
 					adapter.notifyDataSetChanged();
 
-					// TODO add error checking for the above here
+					// TODO add error checking for the above here and below here
+					//to notify the user that something went wrong with blocking the port. 
+					//there should probably be error checking else where as well. 
 
-					blockport(port);
+					blockporttcp(port);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					System.out.println(e + " failed in block port");
 				} catch (Exception e) {
 					System.out.println("failed in int conversion: " + e);
@@ -361,7 +444,7 @@ public class portBlocker extends Fragment {
 
 					// TODO add error checking for the above here
 
-					openport(port);
+					openporttcp(port);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					System.out.println(e + " failed in open port");
@@ -400,9 +483,8 @@ public class portBlocker extends Fragment {
 
 					// TODO add error checking for the above here
 
-					blockport(port);
+					blockportudp(port);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					System.out.println(e + " failed in block port");
 				} catch (Exception e) {
 					System.out.println("failed in int conversion: " + e);
@@ -440,9 +522,8 @@ public class portBlocker extends Fragment {
 
 					// TODO add error checking for the above here
 
-					openport(port);
+					openportudp(port);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					System.out.println(e + " failed in open port");
 				} catch (Exception e) {
 					System.out.println("failed in open int conversion: " + e);
