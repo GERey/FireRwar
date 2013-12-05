@@ -91,14 +91,21 @@ public class WhoIsInfo extends Fragment {
 		queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String q = queryString.getText().toString();
-                query = q;
-                if (q != null && !q.equals("")) {
+                query = queryString.getText().toString();
+                
+                if (query != null && !query.equals("")) {
                 	queryString.setText("");
-                	Log.d("whoIs", "lookup " + q);
+                	Log.d("whoIs", "lookup " + query);
                 	// TODO: now that we have the query string (q), set up the network stuff to get whoIs info on q!!
                 	
-                	printData();
+                	if (query.length() > 5) {
+                		printData();
+                		adapter.notifyDataSetChanged();
+                	}
+                	else {
+                		Toast.makeText(WhoIsInfo.this.mContext,
+    							"Please enter valid query", Toast.LENGTH_SHORT).show();
+                	}
                 }
             }
         });
@@ -110,14 +117,22 @@ public class WhoIsInfo extends Fragment {
 				// TODO Auto-generated method stub
 				if (keyCode == android.view.KeyEvent.KEYCODE_ENTER ||
 						keyCode == android.view.KeyEvent.KEYCODE_DPAD_CENTER) {
-					String q = queryString.getText().toString();
-	                query = q;
-	                if (q != null && !q.equals("")) {
+					query = queryString.getText().toString();
+
+	                if (query != null && !query.equals("")) {
 	                	queryString.setText("");
-	                	Log.d("whoIs", "lookup " + q);
+	                	Log.d("whoIs", "lookup " + query);
 	                	// TODO: now that we have the query string (q), set up the network stuff to get whoIs info on q!!
 	                	
-	                	printData();
+	                	if (query.length() > 5) {
+	                		printData();
+	                		adapter.notifyDataSetChanged();
+	                	}
+	                	else {
+	                		Toast.makeText(WhoIsInfo.this.mContext,
+	    							"Please enter valid query", Toast.LENGTH_SHORT).show();
+	                	}
+	                	
 	                }
 	                return true;
 				}
@@ -185,7 +200,7 @@ public class WhoIsInfo extends Fragment {
 								
 								dataOut = parseData(dataOut);
 								
-								data.add("results:\n " + dataOut);
+								data.add(dataOut);
 								adapter.notifyDataSetChanged();
 								Log.d("eloui", "added data!");
 								

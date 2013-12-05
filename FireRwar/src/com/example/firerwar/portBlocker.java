@@ -45,18 +45,18 @@ public class portBlocker extends Fragment {
 	public ArrayList<String> udpFilterList;
 	public ArrayAdapter<String> adapter;
 	public ArrayAdapter<String> adapter2;
-	
+
 	protected TextView tcpDisplay;
 	protected TextView udpDisplay;
 	protected LinearLayout tempView;
 	protected ListView tcpPortsList;
 	protected ListView udpPortsList;
-	
+
 	protected Button closeTCPButton;
 	protected Button openTCPButton;
 	protected Button closeUDPButton;
 	protected Button openUDPButton;
-	
+
 	protected View rootView;
 
 	Context mContext;
@@ -64,7 +64,7 @@ public class portBlocker extends Fragment {
 
 	protected int greenText;
 	protected int redText;
-	
+
 	protected static final int FILTER_SHOW_ALL = 0;
 	protected static final int FILTER_OPEN = 1;
 	protected static final int FILTER_CLOSE = 2;
@@ -72,25 +72,21 @@ public class portBlocker extends Fragment {
 	protected static final int UDP = 0;
 	protected static final int OPEN = 1;
 	protected static final int CLOSED = 0;
-	
+
 	public static final String ARG_SECTION_NUMBER = "BOOP";
-	
+
 	DatabaseManager db;
 
-	
 	@Override
-	public void onCreate(Bundle savedInstanceState){
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		db = new DatabaseManager(mContext);
-		
-
-
 
 	}
-	
+
 	public void setContext(Context mContext) {
 		this.mContext = mContext;
-		
+
 	}
 
 	@Override
@@ -100,58 +96,55 @@ public class portBlocker extends Fragment {
 		rootView = inflater.inflate(R.layout.port_enter, container, false);
 		greenText = R.color.openGreen;
 		redText = R.color.blockRed;
-		
-		
-		
+
 		initLayout();
-		
+
 		return printNetworkSettings(mContext);
 	}
-	
+
 	protected void initLayout() {
 		tcpDisplay = (TextView) rootView.findViewById(R.id.TCPports);
 		udpDisplay = (TextView) rootView.findViewById(R.id.UDPports);
 		tempView = (LinearLayout) rootView.findViewById(R.id.LinearPortHolder);
 		tcpPortsList = (ListView) rootView.findViewById(R.id.PortItems);
 		udpPortsList = (ListView) rootView.findViewById(R.id.UDPItems);
-		
+
 		closeTCPButton = (Button) rootView.findViewById(R.id.portClosedButton);
 		openTCPButton = (Button) rootView.findViewById(R.id.portOpenButton);
-		closeUDPButton = (Button)rootView.findViewById(R.id.UDPcloseButton);
-		openUDPButton = (Button)rootView.findViewById(R.id.UDPopenButton);
-		
+		closeUDPButton = (Button) rootView.findViewById(R.id.UDPcloseButton);
+		openUDPButton = (Button) rootView.findViewById(R.id.UDPopenButton);
+
 		portText = (EditText) rootView.findViewById(R.id.portText);
-		//portText.setRawInputType(Configuration.KEYBOARD_12KEY);
+		// portText.setRawInputType(Configuration.KEYBOARD_12KEY);
 
 		tcpViewText = new ArrayList<String>();
 		udpViewText = new ArrayList<String>();
 		tcpFilterList = new ArrayList<String>();
 		udpFilterList = new ArrayList<String>();
-		
+
 		tcpDisplay.setText("TCP Ports");
 		udpDisplay.setText("UDP Ports");
-		
+
 		adapter = new ArrayAdapter<String>(mContext,
 				android.R.layout.simple_list_item_1, tcpFilterList);
 		adapter2 = new ArrayAdapter<String>(mContext,
 				android.R.layout.simple_list_item_1, udpFilterList);
-		
+
 		int i = 0;
 		ArrayList<String> temp = db.getAllPorts(TCP);
-		while(temp.size() != i){
+		while (temp.size() != i) {
 			tcpViewText.add(temp.get(i));
 			tcpFilterList.add(temp.get(i));
 			try {
-				
+
 				String openP = "opened";
 				String blockedP = "blocked";
 				Scanner portParse = new Scanner(temp.get(i)).useDelimiter(" ");
-				if(temp.contains(openP)){
+				if (temp.contains(openP)) {
 					openporttcp(Integer.parseInt(portParse.next()));
-				}
-				else if(temp.contains(blockedP)) {
+				} else if (temp.contains(blockedP)) {
 					blockporttcp(Integer.parseInt(portParse.next()));
-				}	
+				}
 
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
@@ -160,22 +153,21 @@ public class portBlocker extends Fragment {
 			}
 			i++;
 		}
-		
+
 		i = 0;
 		temp = db.getAllPorts(UDP);
-		while(temp.size() != i){
+		while (temp.size() != i) {
 			udpViewText.add(temp.get(i));
 			udpFilterList.add(temp.get(i));
 			try {
 				String openP = "opened";
 				String blockedP = "blocked";
 				Scanner portParse = new Scanner(temp.get(i)).useDelimiter(" ");
-				if(temp.contains(openP)){
+				if (temp.contains(openP)) {
 					openportudp(Integer.parseInt(portParse.next()));
-				}
-				else if(temp.contains(blockedP)) {
+				} else if (temp.contains(blockedP)) {
 					blockportudp(Integer.parseInt(portParse.next()));
-				}	
+				}
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -188,12 +180,13 @@ public class portBlocker extends Fragment {
 		udpPortsList.setAdapter(adapter2);
 
 	}
-//TODO putting toasts in the thread fails hardcore, find another way to show to the user it doesn't work.
+
+	// TODO putting toasts in the thread fails hardcore, find another way to
+	// show to the user it doesn't work.
 	public Boolean blockporttcp(final int port) throws IOException {
 		temp = new Socket();
-		db.addPort(port,CLOSED,TCP);
+		db.addPort(port, CLOSED, TCP);
 		worked = true;
-
 
 		try {
 			Thread ports = new Thread(new Runnable() {
@@ -221,7 +214,7 @@ public class portBlocker extends Fragment {
 
 				}
 
-			});//.start();
+			});// .start();
 			ports.start();
 		} catch (Exception e) {
 			worked = false;
@@ -230,10 +223,10 @@ public class portBlocker extends Fragment {
 		return worked;
 
 	}
-	
+
 	public boolean blockportudp(final int port) throws IOException {
 		temp = new Socket();
-		db.addPort(port,CLOSED,UDP);
+		db.addPort(port, CLOSED, UDP);
 		worked = true;
 
 		try {
@@ -272,7 +265,7 @@ public class portBlocker extends Fragment {
 	public boolean openporttcp(final int port) throws IOException {
 		sock = new ServerSocket();
 		worked = true;
-		db.addPort(port,OPEN,TCP);
+		db.addPort(port, OPEN, TCP);
 
 		try {
 			new Thread(new Runnable() {
@@ -304,12 +297,12 @@ public class portBlocker extends Fragment {
 		return worked;
 
 	}
-	
+
 	public boolean openportudp(final int port) throws IOException {
 		sock = new ServerSocket();
 		worked = true;
 
-		db.addPort(port,OPEN,UDP);
+		db.addPort(port, OPEN, UDP);
 
 		try {
 			new Thread(new Runnable() {
@@ -340,21 +333,21 @@ public class portBlocker extends Fragment {
 		}
 		return worked;
 	}
-	
+
 	@Override
 	public void onStart() {
 		setHasOptionsMenu(true);
 		super.onStart();
-		
+
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (inflater != null) {
 			inflater.inflate(R.menu.ports_menu, menu);
 		}
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -371,7 +364,7 @@ public class portBlocker extends Fragment {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	private void filterList(int filter) {
 		int i;
 		tcpFilterList.clear();
@@ -411,7 +404,7 @@ public class portBlocker extends Fragment {
 			}
 			break;
 		}
-		
+
 		adapter.notifyDataSetChanged();
 		adapter2.notifyDataSetChanged();
 	}
@@ -422,138 +415,191 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View v) {
 				String portHold = portText.getText().toString();
-				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
+
+				if (portHold != null && !portHold.equals("")) {
+					portText.setText("");
+				}
+
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
-				
+
 				try {
 					int port = Integer.parseInt(portHold);
-					/*this code removes the offending port then readds it */
-					/*the below code will have to be changed to include updates instead of 
-					 * removing it then readding it to the list */
-					
-					for (i = 0; i < tcpViewText.size(); i++) {
-						if (tcpViewText.get(i).contains(portHold)) {
-							tcpViewText.remove(i);
-							db.updatePortStatus(port, TCP, CLOSED);
-							break;
+					/* this code removes the offending port then reads it */
+					/*
+					 * the below code will have to be changed to include updates
+					 * instead of removing it then reading it to the list
+					 */
+
+					if (port > 0) {
+						for (i = 0; i < tcpViewText.size(); i++) {
+							if (tcpViewText.get(i).contains(portHold)) {
+								tcpViewText.remove(i);
+								db.updatePortStatus(port, TCP, CLOSED);
+								break;
+							}
 						}
-					}
-					for (i = 0; i < tcpFilterList.size(); i++) {
-						if (tcpFilterList.get(i).contains(portHold)) {
-							tcpFilterList.remove(i);
-							break;
+						for (i = 0; i < tcpFilterList.size(); i++) {
+							if (tcpFilterList.get(i).contains(portHold)) {
+								tcpFilterList.remove(i);
+								break;
+							}
 						}
-					}
 
-					if (blockporttcp(port)){
-					
-						tcpViewText.add(portHold + " closed");
-						tcpFilterList.add(portHold + " closed");
+						if (blockporttcp(port)) {
 
+							tcpViewText.add(portHold + " closed");
+							tcpFilterList.add(portHold + " closed");
 
-						adapter.notifyDataSetChanged();
-					}
-					else{
-						Toast.makeText(portBlocker.this.mContext, "Blocking TCP port failed", Toast.LENGTH_SHORT).show();
+							adapter.notifyDataSetChanged();
+						} else {
+							Toast.makeText(portBlocker.this.mContext,
+									"Blocking TCP port failed",
+									Toast.LENGTH_SHORT).show();
+						}
+					} else {
+						Toast.makeText(portBlocker.this.mContext,
+								"Please enter a positive integer",
+								Toast.LENGTH_SHORT).show();
 					}
 
 					// TODO add error checking for the above here and below here
-					//to notify the user that something went wrong with blocking the port. 
-					//there should probably be error checking else where as well. 
+					// to notify the user that something went wrong with
+					// blocking the port.
+					// there should probably be error checking else where as
+					// well.
 
-					
 				} catch (IOException e) {
 					System.out.println(e + " failed in block port");
+					Toast.makeText(portBlocker.this.mContext,
+							"Failed to block port", Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					System.out.println("failed in int conversion: " + e);
+					Toast.makeText(portBlocker.this.mContext,
+							"Please enter a port", Toast.LENGTH_SHORT).show();
 				}
 
 			}
 		});
-//TODO need to implement update command so if you close a port that already exists it updates.
+		// TODO need to implement update command so if you close a port that
+		// already exists it updates.
 		openTCPButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				String portHold = portText.getText().toString();
-				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
+
+				if (portHold != null && !portHold.equals("")) {
+					portText.setText("");
+				}
+
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
-				
+
 				try {
 					int port = Integer.parseInt(portHold);
-					
-					for (i = 0; i < tcpViewText.size(); i++) {
-						if (tcpViewText.get(i).contains(portHold)) {
-							tcpViewText.remove(i);
-							db.updatePortStatus(port, TCP, OPEN);
-							break;
-						}
-					}
-					for (i = 0; i < tcpFilterList.size(); i++) {
-						if (tcpFilterList.get(i).contains(portHold)) {
-							tcpFilterList.remove(i);
-							break;
-						}
-					}
-					tcpViewText.add(portHold + " opened");
-					tcpFilterList.add(portHold + " opened");
-					adapter.notifyDataSetChanged();
 
-					// TODO add error checking for the above here
+					if (port > 0) {
 
-					openporttcp(port);
+						for (i = 0; i < tcpViewText.size(); i++) {
+							if (tcpViewText.get(i).contains(portHold)) {
+								tcpViewText.remove(i);
+								db.updatePortStatus(port, TCP, OPEN);
+								break;
+							}
+						}
+						for (i = 0; i < tcpFilterList.size(); i++) {
+							if (tcpFilterList.get(i).contains(portHold)) {
+								tcpFilterList.remove(i);
+								break;
+							}
+						}
+						tcpViewText.add(portHold + " opened");
+						tcpFilterList.add(portHold + " opened");
+						adapter.notifyDataSetChanged();
+
+						// TODO add error checking for the above here
+
+						openporttcp(port);
+					} else {
+						Toast.makeText(portBlocker.this.mContext,
+								"Please enter a positive integer",
+								Toast.LENGTH_SHORT).show();
+					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					System.out.println(e + " failed in open port");
+					Toast.makeText(portBlocker.this.mContext,
+							"Failed to open port", Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					System.out.println("failed in open int conversion: " + e);
+					Toast.makeText(portBlocker.this.mContext,
+							"Please enter a port", Toast.LENGTH_SHORT).show();
 				}
 
 			}
 		});
-		
+
 		closeUDPButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				String portHold = portText.getText().toString();
-				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
+
+				if (portHold != null && !portHold.equals("")) {
+					portText.setText("");
+				}
+
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
-				
+
 				try {
 					int port = Integer.parseInt(portHold);
-					
-					for (i = 0; i < udpViewText.size(); i++) {
-						if (udpViewText.get(i).contains(portHold)) {
-							udpViewText.remove(i);
-							db.updatePortStatus(port, UDP, CLOSED);
 
-							break;
+					if (port > 0) {
+						for (i = 0; i < udpViewText.size(); i++) {
+							if (udpViewText.get(i).contains(portHold)) {
+								udpViewText.remove(i);
+								db.updatePortStatus(port, UDP, CLOSED);
+
+								break;
+							}
 						}
-					}
-					for (i = 0; i < udpFilterList.size(); i++) {
-						if (udpFilterList.get(i).contains(portHold)) {
-							udpFilterList.remove(i);
-							break;
+						for (i = 0; i < udpFilterList.size(); i++) {
+							if (udpFilterList.get(i).contains(portHold)) {
+								udpFilterList.remove(i);
+								break;
+							}
 						}
+						udpViewText.add(portHold + " blocked");
+						udpFilterList.add(portHold + " blocked");
+						adapter2.notifyDataSetChanged();
+
+						// TODO add error checking for the above here
+
+						blockportudp(port);
+					} else {
+						Toast.makeText(portBlocker.this.mContext,
+								"Please enter a positive integer",
+								Toast.LENGTH_SHORT).show();
 					}
-					udpViewText.add(portHold + " blocked");
-					udpFilterList.add(portHold + " blocked");
-					adapter2.notifyDataSetChanged();
-
-					// TODO add error checking for the above here
-
-					blockportudp(port);
 				} catch (IOException e) {
 					System.out.println(e + " failed in block port");
+					Toast.makeText(portBlocker.this.mContext,
+							"Failed to block port", Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					System.out.println("failed in int conversion: " + e);
+					Toast.makeText(portBlocker.this.mContext,
+							"Please enter a port", Toast.LENGTH_SHORT).show();
 				}
 			}
-			
+
 		});
 
 		openUDPButton.setOnClickListener(new OnClickListener() {
@@ -561,44 +607,60 @@ public class portBlocker extends Fragment {
 			@Override
 			public void onClick(View arg0) {
 				String portHold = portText.getText().toString();
-				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-			    mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
+
+				if (portHold != null && !portHold.equals("")) {
+					portText.setText("");
+				}
+
+				InputMethodManager mgr = (InputMethodManager) portBlocker.this.mContext
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				mgr.hideSoftInputFromWindow(portText.getWindowToken(), 0);
 				int i;
-				
+
 				try {
 					int port = Integer.parseInt(portHold);
-					
-					for (i = 0; i < udpViewText.size(); i++) {
-						if (udpViewText.get(i).contains(portHold)) {
-							udpViewText.remove(i);
-							db.updatePortStatus(port, UDP, OPEN);
 
-							break;
+					if (port > 0) {
+						for (i = 0; i < udpViewText.size(); i++) {
+							if (udpViewText.get(i).contains(portHold)) {
+								udpViewText.remove(i);
+								db.updatePortStatus(port, UDP, OPEN);
+
+								break;
+							}
 						}
-					}
-					for (i = 0; i < udpFilterList.size(); i++) {
-						if (udpFilterList.get(i).contains(portHold)) {
-							udpFilterList.remove(i);
-							break;
+						for (i = 0; i < udpFilterList.size(); i++) {
+							if (udpFilterList.get(i).contains(portHold)) {
+								udpFilterList.remove(i);
+								break;
+							}
 						}
+
+						udpViewText.add(portHold + " opened");
+						udpFilterList.add(portHold + " opened");
+						adapter2.notifyDataSetChanged();
+
+						// TODO add error checking for the above here
+
+						openportudp(port);
+					} else {
+						Toast.makeText(portBlocker.this.mContext,
+								"Please enter a positive integer",
+								Toast.LENGTH_SHORT).show();
 					}
-					
-					udpViewText.add(portHold + " opened");
-					udpFilterList.add(portHold + " opened");
-					adapter2.notifyDataSetChanged();
-
-					// TODO add error checking for the above here
-
-					openportudp(port);
 				} catch (IOException e) {
 					System.out.println(e + " failed in open port");
+					Toast.makeText(portBlocker.this.mContext,
+							"Failed to open port", Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					System.out.println("failed in open int conversion: " + e);
+					Toast.makeText(portBlocker.this.mContext,
+							"Please enter a port", Toast.LENGTH_SHORT).show();
 				}
 			}
-			
+
 		});
-		
+
 		adapter.notifyDataSetChanged();
 		adapter2.notifyDataSetChanged();
 

@@ -99,7 +99,7 @@ public class MainActivity extends FragmentActivity implements
 
 										// 2. Chain together various setter methods to set the dialog characteristics
 										builder.setTitle("Whois")
-										       .setMessage("Enter a link to query and press 'Lookup!' to get results");
+										       .setMessage("Enter a link to query and press 'Lookup!'. Then close the keyboard to see results");
 										
 										builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 									           public void onClick(DialogInterface dialog, int id) {
@@ -125,7 +125,7 @@ public class MainActivity extends FragmentActivity implements
 
 										// 2. Chain together various setter methods to set the dialog characteristics
 										builder.setTitle("Port Blocker")
-										       .setMessage("When setting ports please do not use ports between 0 -1024");
+										       .setMessage("When setting ports please do not use ports between 0-1024. Valid ports are positive integers.");
 										
 										builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 									           public void onClick(DialogInterface dialog, int id) {
