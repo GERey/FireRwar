@@ -149,7 +149,8 @@ public class MainActivity extends FragmentActivity implements
 
 										// 2. Chain together various setter methods to set the dialog characteristics
 										builder.setTitle("Metrics Viewer")
-										       .setMessage("Click the button to get started!");
+										       .setMessage("Graph starts with default Downloaded and Uploaded added. All" +
+										       		" data is shown in the following format: PackageName: KB used");
 										
 										builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 									           public void onClick(DialogInterface dialog, int id) {

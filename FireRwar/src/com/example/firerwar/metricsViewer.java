@@ -60,12 +60,12 @@ public class metricsViewer extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.graphs);
-		DownloadRenderer.setAxisTitleTextSize(16);
+		DownloadRenderer.setAxisTitleTextSize(22);
 		DownloadRenderer.setChartTitleTextSize(20);
-		DownloadRenderer.setLabelsTextSize(30);
+		DownloadRenderer.setLabelsTextSize(45);
 		DownloadRenderer.setLegendTextSize(15);
-		DownloadRenderer.setMargins(new int[] { 10, 30, 0, 0 });
-		DownloadRenderer.setYLabelsPadding(10);
+		DownloadRenderer.setMargins(new int[] { 10, 150, 10, 10 });
+		//DownloadRenderer.setYLabelsPadding(30);
 		DownloadRenderer.setAxesColor(Color.CYAN);
 		DownloadRenderer.setZoomEnabled(true, false);
 		
@@ -83,19 +83,6 @@ public class metricsViewer extends FragmentActivity {
 		DownloadRenderer.addSeriesRenderer(renderer);
 		dataSetup();
 		addNewSeries(1);
-//		
-//		/**/
-//		seriesTitle = "Upload";
-//		series = new XYSeries(seriesTitle);
-//
-//		DownloadDataSet.addSeries(series);
-//		DLCurrentSeries = series;
-//		
-//
-//		renderer = new XYSeriesRenderer();
-//		renderer.setColor(Color.CYAN);
-//		DownloadRenderer.addSeriesRenderer(renderer);
-//		printNetworkSettings();
 
 	}
 	
@@ -107,18 +94,9 @@ public class metricsViewer extends FragmentActivity {
 		uidsList.add(uidStorage.get(position));
 		String packages[] = temp1.split("\\.|:");
 		String seriesTitle = packages[1];
-//		Scanner  scan = new Scanner(temp1).useDelimiter(".");
-//		String seriesTitle = "";
-//		if (scan.hasNext()){
-//			seriesTitle = scan.next();
-//			if (scan.hasNext()){
-//				seriesTitle = scan.next();
-//				Toast.makeText(this, seriesTitle, Toast.LENGTH_SHORT).show();
-//			}
-//		}
+
 		XYSeries series = new XYSeries(seriesTitle);
 		DownloadDataSet.addSeries(series);
-		/* Not sure about setting the current series just a proof of concept*/
 		
 		/*Sets up the second renderer*/
 		XYSeriesRenderer renderer = new XYSeriesRenderer();
@@ -154,10 +132,10 @@ public class metricsViewer extends FragmentActivity {
 				XYSeries[] temp = DownloadDataSet.getSeries();
 				
 				DLCurrentSeries=temp[0];
-				DLCurrentSeries.add(y, TrafficStats.getTotalRxBytes());
+				DLCurrentSeries.add(y, TrafficStats.getTotalRxBytes()/1000);
 				
 				DLCurrentSeries=temp[1];
-				DLCurrentSeries.add(y, TrafficStats.getTotalTxBytes());
+				DLCurrentSeries.add(y, TrafficStats.getTotalTxBytes()/1000);
 //				
 //				/*0 Is always the downloads and 1 is always the uploads*/
 				for (int i = 2; i < temp.length; i++){
@@ -166,16 +144,8 @@ public class metricsViewer extends FragmentActivity {
 					DLCurrentSeries=temp[i];
 					/*uid is minus two, because two lists are added by default who carry no uid
 					 * Download and Upload Stats*/
- 					DLCurrentSeries.add(y, TrafficStats.getUidRxBytes(uidsList.get(i-2)));
+ 					DLCurrentSeries.add(y, TrafficStats.getUidRxBytes(uidsList.get(i-2)/1000));
 					
-//					if (temp[i].getTitle().equals("Download")){
-//						DLCurrentSeries=temp[i];
-//						DLCurrentSeries.add(y, TrafficStats.getTotalRxBytes());
-//					}
-//					else if (temp[i].getTitle().equals("Upload")){
-//						DLCurrentSeries=temp[i];
-//						DLCurrentSeries.add(y, TrafficStats.getTotalTxBytes());
-//					}
 				}
 				y++;
 				if (DLChartView != null) {
@@ -209,13 +179,14 @@ public class metricsViewer extends FragmentActivity {
 		listerPorts.setAdapter(adapter);
 
 		// calculates how much data has been downloaded and uploaded from boot.
-		long rxBytes = TrafficStats.getTotalRxBytes();
-		long txBytes = TrafficStats.getTotalTxBytes();
+		//keeps the rx and txBytes in mega bytes.
+		long rxBytes = TrafficStats.getTotalRxBytes() / 1000;
+		long txBytes = TrafficStats.getTotalTxBytes()/1000;
 		dataAppUsage.add("Mobile.Download: " + Long.toString(rxBytes));
 		dataAppUsage.add("Mobile.Uploaded: " + Long.toString(txBytes));
 
 		// handles reading in all of the applications name and their data
-		readApplicationPackageNames(dataAppUsage);
+		readApplicationsPackagesAndNames(dataAppUsage);
 		listerPorts.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
@@ -224,7 +195,7 @@ public class metricsViewer extends FragmentActivity {
 			{
 				int i = 0;
 				addNewSeries(position);
-				return false;
+				return true;
 				
 			}});
 
@@ -235,28 +206,30 @@ public class metricsViewer extends FragmentActivity {
 
 	}
 
-	public ArrayList<String> readApplicationPackageNames(
+	public ArrayList<String> readApplicationsPackagesAndNames(
 			ArrayList<String> infoPackage) {
 
-		PackageManager packer = this.getPackageManager();
+		PackageManager pckMngr = this.getPackageManager();
 		File dir = new File("/proc/uid_stat/");
-		String[] children = dir.list();
-		List<Integer> uids = new ArrayList<Integer>();
-		if (children != null) {
-			for (int i = 0; i < children.length; i++) {
-				int uid = Integer.parseInt(children[i]);
+		String[] appFiles = dir.list();
+		List<Integer> appUids = new ArrayList<Integer>();
+		
+		if (appFiles != null) {
+			for (int i = 0; i < appFiles.length; i++) {
+				
+				int uid = Integer.parseInt(appFiles[i]);
 				String uidString = String.valueOf(uid);
 				File uidFileDir = new File("/proc/uid_stat/" + uidString);
-				File uidActualFile = new File(uidFileDir, "tcp_rcv");
+				File uidFileName = new File(uidFileDir, "tcp_rcv");
 
 				try {
 					BufferedReader br = new BufferedReader(new FileReader(
-							uidActualFile));
+							uidFileName));
 					String line;
 
 					while ((line = br.readLine()) != null) {
 						infoPackage
-								.add(packer.getNameForUid(uid) + ": " + line);
+								.add(pckMngr.getNameForUid(uid) + ": " + line);
 						uidStorage.add(uid);
 					}
 					br.close();
@@ -265,7 +238,7 @@ public class metricsViewer extends FragmentActivity {
 					// handle this
 				}
 
-				uids.add(uid);
+				appUids.add(uid);
 			}
 
 		}
