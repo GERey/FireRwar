@@ -385,12 +385,12 @@ public class portBlocker extends Fragment {
 			break;
 		case FILTER_CLOSE:
 			for (i = 0; i < tcpViewText.size(); i++) {
-				if (tcpViewText.get(i).contains("blocked")) {
+				if (tcpViewText.get(i).contains("closed")) {
 					tcpFilterList.add(tcpViewText.get(i));
 				}
 			}
 			for (i = 0; i < udpViewText.size(); i++) {
-				if (udpViewText.get(i).contains("blocked")) {
+				if (udpViewText.get(i).contains("closed")) {
 					udpFilterList.add(udpViewText.get(i));
 				}
 			}
